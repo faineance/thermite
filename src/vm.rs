@@ -7,7 +7,6 @@ const REG_SIZE: usize = 16;
 #[derive(Debug,PartialEq)]
 enum VMErrorKind {
 	StackError,
-	UndefinedLabel,
 	ZeroDivision,
 }
 impl fmt::Debug for VM {
