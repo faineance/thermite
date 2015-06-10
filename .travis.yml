@@ -1,0 +1,4 @@
+langauge: rust
+
+rust: 
+   - nightly
