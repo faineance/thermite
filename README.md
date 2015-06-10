@@ -1,4 +1,4 @@
-# vmachine [![Build Status](https://travis-ci.org/faineance/vmachine.svg)](https://travis-ci.org/faineance/vmachine)
+# vmachine [![Build Status](https://travis-ci.org/faineance/vmachine.svg)](https://travis-ci.org/faineance/vmachine)[![Coverage Status](https://coveralls.io/repos/faineance/vmachine/badge.svg)](https://coveralls.io/r/faineance/vmachine)
 A virtual machine 
 
 ## Instruction Set
