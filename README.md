@@ -1,4 +1,4 @@
-# vmachine [![Build Status](https://travis-ci.org/faineance/vmachine.svg)](https://travis-ci.org/faineance/vmachine)[![Coverage Status](https://coveralls.io/repos/faineance/vmachine/badge.svg)](https://coveralls.io/r/faineance/vmachine)
+# vmachine [![Build Status](https://travis-ci.org/faineance/vmachine.svg)](https://travis-ci.org/faineance/vmachine) [![Coverage Status](https://coveralls.io/repos/faineance/vmachine/badge.svg)](https://coveralls.io/r/faineance/vmachine)
 A virtual machine 
 
 ## Instruction Set
@@ -32,4 +32,4 @@ Where ``s1`` is the TOS and ``s2`` is the element on the stack below the TOS.
 | nop         | nop       | do nothing                                                                |
 
 ## License
-Vmachine is licensed under the [MIT License](/LICENSE).
+vmachine is licensed under the [MIT License](/LICENSE).

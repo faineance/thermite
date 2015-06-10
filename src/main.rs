@@ -1,6 +1,8 @@
 #![feature(convert)] 
 mod vm;
-use vm::{VM, Instruction};
+mod instructions;
+use instructions::Instruction;
+use vm::VM;
 use std::env;
 use std::io::prelude::*;
 use std::fs::File;
@@ -16,8 +18,6 @@ Options:
 -h, --help      Show this message.
 --version   Display the version.
 ";
-
-
 
 fn main() {
 	let mut arguments = env::args();

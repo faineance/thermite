@@ -1,26 +1,8 @@
 use std::fmt;
-use std::collections::HashMap;
-
+use instructions::Instruction;
 const STACK_SIZE: usize = 256;
 const REG_SIZE: usize = 16; 
 
-pub type reg  = usize;
-pub enum Instruction {
-	OUT, // Print top of stack
-    PSH(i32), // Pushes value to stack
-	POP, // Pops from stack
-	ADD, // Adds two top values on stack
-	SUB, 
-	MUL,
-	DIV,
-	SET(reg,i32), 
-	MOV(reg,reg),
-	JMP, //todo
-	JZ, //todo
-	JNZ, //todo
-	HLT, // Halts program
-    NOP, // Does nothing
-}
 
 #[derive(Debug,PartialEq)]
 enum VMErrorKind {
