@@ -113,13 +113,16 @@ impl VM {
 				Ok(())
 			}
 			&Instruction::JMP => {
-				Ok(())
+				unimplemented!()
+				// Ok(())
 			}
 			&Instruction::JZ => {
-				Ok(())
+				unimplemented!()
+				// Ok(())
 			}
 			&Instruction::JNZ => {
-				Ok(())
+				unimplemented!()
+				// Ok(())
 			}
 			&Instruction::HLT => {
 				self.running = false;

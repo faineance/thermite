@@ -1,5 +1,6 @@
 #![feature(convert)] 
 mod vm;
+mod tokenizer;
 mod instructions;
 use instructions::Instruction;
 use vm::VM;
@@ -29,11 +30,14 @@ fn main() {
 					print!("Welcome to the vmachine repl.\nUse ctrl-c to exit.\n");
 					let mut stdin = stdin();
 					let mut stdout = stdout();
+					let mut vm = VM::new();
 					loop {
 						stdout.write_all(PROMPT.as_bytes());
 						stdout.flush().ok();
 						let mut input = String::new();
 						stdin.read_line(&mut input);
+
+
 
 					}	
 				},
@@ -43,11 +47,12 @@ fn main() {
 							let mut s = String::new(); 
 							match File::open(filename) {
 								Ok(mut input) => {
-									// let mut program = String::new(); 
-
-									// input.read_to_string(&mut program);
-
 									let mut vm = VM::new();
+									let mut program = String::new(); 
+
+									input.read_to_string(&mut program);
+
+									
 									let program = vec![Instruction::PSH(6),Instruction::PSH(7),Instruction::ADD, Instruction::OUT, Instruction::HLT];	
 									vm.run(program);
 								},
