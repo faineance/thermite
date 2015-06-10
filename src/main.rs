@@ -4,6 +4,8 @@ use vm::{VM, Instruction};
 use std::env;
 use std::io::prelude::*;
 use std::fs::File;
+use std::io::{stdin, stdout};
+const PROMPT: &'static str = "\x1B[36mvm> \x1B[37m";
 static USAGE: &'static str = "
 Usage:
 vmach repl
@@ -24,7 +26,16 @@ fn main() {
 		Some(command) => {
 			match command.as_ref() {
 				"repl" => {
+					print!("Welcome to the vmachine repl.\nUse ctrl-c to exit.\n");
+					let mut stdin = stdin();
+					let mut stdout = stdout();
+					loop {
+						stdout.write_all(PROMPT.as_bytes());
+						stdout.flush().ok();
+						let mut input = String::new();
+						stdin.read_line(&mut input);
 
+					}	
 				},
 				"run" => {
 					match arguments.next() {
