@@ -9,10 +9,10 @@ Where ``s1`` is the TOS and ``s2`` is the element on the stack below the TOS.
 |-------------|-----------|---------------------------------------------------------------------------|
 | psh         | psh ``n`` | push ``n`` onto the top of the stack                                    |
 | pop         | pop       | pop the top of the stack                                                 |
-| add         | add       | replace top two elements of the stack with their sum (``s2 + s1``)       |
-| sub         | sub       | replace top two elements of the stack with their difference (``s2 - s1``)|
-| mul         | mul       | replace top two elements of the stack with their product (``s2 * s1``)   |
-| div         | div       | replace top two elements of the stack with their product (``s2 / s1``)   |
+| add         | add       | replace top two elements of the stack with their sum (``s1 + s2``)       |
+| sub         | sub       | replace top two elements of the stack with their difference (``s1 - s2``)|
+| mul         | mul       | replace top two elements of the stack with their product (``s1 * s2``)   |
+| div         | div       | replace top two elements of the stack with their product (``s1 / s2``)   |
 #### Register Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
