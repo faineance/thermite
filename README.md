@@ -18,6 +18,8 @@ Where ``s1`` is the TOS and ``s2`` is the element on the stack below the TOS.
 |-------------|-----------|---------------------------------------------------------------------------|
 | set         | set ``r``  ``n``  | set register ``r`` to value ``n``                                            |
 | mov         | mov ``r1`` ``r2`` | move the value in register ``r1`` to register ``r2``                      |
+| ldr         | ldr ``r`` | push value in ``r`` to TOS                    |
+| str         | str ``r`` | pop and store TOS to ``r``                    |
 #### Jump Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|

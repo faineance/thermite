@@ -17,7 +17,7 @@ impl fmt::Debug for VM {
 
 pub struct VM {
 	stack: Vec<i32>,
-	registers: [u8; REG_SIZE],
+	registers: [i32; REG_SIZE],
 	ip: usize,
 	running: bool,
 	debug: bool,
@@ -104,12 +104,25 @@ impl VM {
 				}
 			}
 			&Instruction::SET(register, value) => {
-				self.registers[register as usize] = value as u8;
+				self.registers[register as usize] = value;
 				Ok(())
 			}
 			&Instruction::MOV(register1, register2) => {
 				self.registers[register1 as usize] = self.registers[register2 as usize];
 				Ok(())
+			}
+			&Instruction::LDR(register) => {
+				self.stack.push(self.registers[register as usize] as i32 );
+				Ok(())
+			}
+			&Instruction::STR(register) => {
+				match self.stack.pop() {
+					Some(value) => {
+						self.registers[register as usize] = value;
+						Ok(())
+					},
+					_ => Err(VMErrorKind::StackError)
+				}
 			}
 			&Instruction::JMP => {
 				unimplemented!()

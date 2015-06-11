@@ -11,6 +11,8 @@ pub enum Instruction {
 	DIV,
 	SET(Register,i32), 
 	MOV(Register,Register),
+	LDR(Register), //Pushes value in register to stack
+	STR(Register), //Store TOS to register
 	JMP, //todo
 	JZ, //todo
 	JNZ, //todo
