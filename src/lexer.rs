@@ -13,6 +13,16 @@ pub fn tokenize(input: &str) -> Vec<Token> {
 	let mut tokens: Vec<Token> = Vec::new();
 	let mut tokenizer = Lexer::new(input);
 
+	loop {
+		match tokenizer.next() {
+			Some(t) => {
+
+				tokens.push(t);
+
+			},
+			None => break 
+		}
+	}
 	tokens
 }
 
@@ -35,17 +45,18 @@ impl<'a> Lexer<'a> {
 		}
 	}
 	fn advance(&mut self) -> Option<char> {
-		if let Some((i, c)) = self.iter.next() {
 
+		if let Some((i, c)) = self.iter.next() {
 			match c  {
 				'\n' => {
 					self.column = 1;
 					self.line  += 1;
-				}
+				},
+
 				'\t' => {
 					self.column  += 4;
 					
-				}
+				},
 				_ => self.column += 1
 
 			}
@@ -56,8 +67,10 @@ impl<'a> Lexer<'a> {
 	}
 	fn advance_while<P: Fn(char) -> bool>(&mut self, p: P) {
 		loop {
+
 			match self.peek() {
 				Some(c) => {
+
 					match p(c) {
 						false => break,
 						true => continue
@@ -81,7 +94,9 @@ impl<'a> Lexer<'a> {
 	fn handle_number(&mut self) -> Token {
 		let start = self.pos;
 		self.advance_while(is_numeric);
+		
 		Token::Value(self.input[start..self.pos].parse().unwrap())
+
 	}
 	fn handle_other(&mut self) -> Token {
 		//todo
