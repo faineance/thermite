@@ -1,6 +1,6 @@
 #![feature(convert)] 
 mod vm;
-mod tokenizer;
+mod lexer;
 mod instructions;
 use instructions::Instruction;
 use vm::VM;
