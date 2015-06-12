@@ -11,7 +11,7 @@ enum VMErrorKind {
 }
 impl fmt::Debug for VM {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "Registers: \n {:?} \n Stack Contents:\n {:?}", self.registers, self.stack)
+		write!(f, "Registers: \n {:?} \nStack Contents:\n {:?}", self.registers, self.stack)
 	}
 }
 
@@ -35,10 +35,9 @@ impl VM {
 			match self.eval(instruction) {
 				Ok(_) => {},
 				Err(e) => {
-					
 					println!("Registers: \n {:?}",self.registers);
 					println!("Stack Contents:\n {:?}",self.stack);
-					panic!("VMError: {:?} on ip {:?}",e, self.ip + 1);	
+					panic!("VMError: {:?} on ip {:?}", e, self.ip + 1);	
 				}
 			}
 			self.ip += 1;
@@ -146,3 +145,80 @@ impl VM {
 		}
 	}
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use instructions::Instruction;
+
+	#[test]
+	fn add() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5), Instruction::PSH(10),Instruction::ADD, Instruction::HLT];
+		vm.run(program);
+		assert_eq!( vm.stack.last().unwrap(), &15);
+	}
+	#[test]
+	fn sub() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5), Instruction::PSH(10),Instruction::SUB, Instruction::HLT];
+		vm.run(program);
+		assert_eq!( vm.stack.last().unwrap(), &5);
+	}
+	#[test]
+	fn mul() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5), Instruction::PSH(10),Instruction::MUL, Instruction::HLT];
+		vm.run(program);
+		assert_eq!( vm.stack.last().unwrap(), &50);
+	}
+	#[test]
+	fn div() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5), Instruction::PSH(10),Instruction::DIV, Instruction::HLT];
+		vm.run(program);
+		assert_eq!( vm.stack.last().unwrap(), &2);
+	}
+
+	#[test]
+	#[should_panic(expected = "VMError: StackError on ip 2")]
+	fn add_stackerror() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5),Instruction::ADD, Instruction::HLT];
+		vm.run(program);
+		assert_eq!(vm.stack.last().unwrap(), &3);
+	}
+	#[test]
+	#[should_panic(expected = "VMError: StackError on ip 2")]
+	fn sub_stackerror() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5),Instruction::SUB, Instruction::HLT];
+		vm.run(program);
+		assert_eq!(vm.stack.last().unwrap(), &3);
+	}
+	#[test]
+	#[should_panic(expected = "VMError: StackError on ip 2")]
+	fn mul_stackerror() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5),Instruction::MUL, Instruction::HLT];
+		vm.run(program);
+		assert_eq!(vm.stack.last().unwrap(), &3);
+	}
+	#[test]
+	#[should_panic(expected = "VMError: StackError on ip 2")]
+	fn div_stackerror() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5),Instruction::DIV, Instruction::HLT];
+		vm.run(program);
+		assert_eq!(vm.stack.last().unwrap(), &3);
+	}
+	#[test]
+	#[should_panic(expected = "VMError: ZeroDivision on ip 3")]
+	fn zerodivision() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(0),Instruction::PSH(10),Instruction::DIV, Instruction::HLT];
+		vm.run(program);
+		assert_eq!(vm.stack.last().unwrap(), &0);
+	}
+}
+
