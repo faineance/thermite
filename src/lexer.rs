@@ -60,7 +60,7 @@ impl<'a> Lexer<'a> {
 				_ => self.column += 1
 
 			}
-			self.pos = i;
+			self.pos = i + 1;
 			return Some(c);
 		}
 		None
@@ -73,7 +73,7 @@ impl<'a> Lexer<'a> {
 
 					match p(c) {
 						false => break,
-						true => continue
+						true => {}
 					}
 				}
 				None => break
@@ -96,7 +96,6 @@ impl<'a> Lexer<'a> {
 		self.advance_while(is_numeric);
 		
 		Token::Value(self.input[start..self.pos].parse().unwrap())
-
 	}
 	fn handle_other(&mut self) -> Token {
 		//todo
@@ -130,3 +129,44 @@ fn is_alphabetic(c: char) -> bool {
 		_ => false
 	}
 }
+
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use super::{is_numeric, is_alphabetic};
+	#[test]
+	fn advance(){
+		let mut lexer = Lexer::new("test 14 @\ntesting\ntest\ttesting");
+		let mut output = String::new();
+
+		loop {
+			match lexer.advance() {
+				Some(c) => {
+					output.push(c);
+
+				},
+				None => break
+			}
+		}
+		assert_eq!(output, "test 14 @\ntesting\ntest\ttesting");
+		assert_eq!(lexer.line, 3);
+		assert_eq!(lexer.column, 16);
+	}
+	#[test]
+	fn advance_while_numeric(){
+		let mut lexer = Lexer::new("4532test s34");
+		let start = lexer.pos;
+		lexer.advance_while(is_numeric);
+		assert_eq!(&lexer.input[start..lexer.pos], "4532");
+	}
+	#[test]
+	fn advance_while_alphabetic(){
+		let mut lexer = Lexer::new("test3 3test");
+		let start = lexer.pos;
+		lexer.advance_while(is_alphabetic);
+		assert_eq!(&lexer.input[start..lexer.pos], "test");
+	}
+	
+}
+
