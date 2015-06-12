@@ -107,7 +107,7 @@ impl VM {
 				Ok(())
 			}
 			&Instruction::MOV(register1, register2) => {
-				self.registers[register1 as usize] = self.registers[register2 as usize];
+				self.registers[register2 as usize] = self.registers[register1 as usize];
 				Ok(())
 			}
 			&Instruction::LDR(register) => {
@@ -186,7 +186,6 @@ mod tests {
 		let mut vm = VM::new();
 		let program = vec![Instruction::PSH(5),Instruction::ADD, Instruction::HLT];
 		vm.run(program);
-		assert_eq!(vm.stack.last().unwrap(), &3);
 	}
 	#[test]
 	#[should_panic(expected = "VMError: StackError on ip 2")]
@@ -194,7 +193,6 @@ mod tests {
 		let mut vm = VM::new();
 		let program = vec![Instruction::PSH(5),Instruction::SUB, Instruction::HLT];
 		vm.run(program);
-		assert_eq!(vm.stack.last().unwrap(), &3);
 	}
 	#[test]
 	#[should_panic(expected = "VMError: StackError on ip 2")]
@@ -202,7 +200,6 @@ mod tests {
 		let mut vm = VM::new();
 		let program = vec![Instruction::PSH(5),Instruction::MUL, Instruction::HLT];
 		vm.run(program);
-		assert_eq!(vm.stack.last().unwrap(), &3);
 	}
 	#[test]
 	#[should_panic(expected = "VMError: StackError on ip 2")]
@@ -210,7 +207,6 @@ mod tests {
 		let mut vm = VM::new();
 		let program = vec![Instruction::PSH(5),Instruction::DIV, Instruction::HLT];
 		vm.run(program);
-		assert_eq!(vm.stack.last().unwrap(), &3);
 	}
 	#[test]
 	#[should_panic(expected = "VMError: ZeroDivision on ip 3")]
@@ -218,7 +214,42 @@ mod tests {
 		let mut vm = VM::new();
 		let program = vec![Instruction::PSH(0),Instruction::PSH(10),Instruction::DIV, Instruction::HLT];
 		vm.run(program);
-		assert_eq!(vm.stack.last().unwrap(), &0);
+	}
+	#[test]
+	fn set() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::SET(1, 15), Instruction::HLT];
+		vm.run(program);
+		assert_eq!( vm.registers[1], 15);
+	}
+	#[test]
+	fn mov() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::SET(1, 15), Instruction::MOV(1, 2), Instruction::HLT];
+		vm.run(program);
+		assert_eq!( vm.registers[2], 15);
+	}
+	#[test]
+	fn ldr() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::SET(1, 15), Instruction::LDR(1), Instruction::HLT];
+		vm.run(program);
+		assert_eq!( vm.stack.last().unwrap(), &15);
+	}
+	#[test]
+	fn str() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5), Instruction::STR(1), Instruction::HLT];
+		vm.run(program);
+		assert_eq!( vm.registers[1], 5);
+	}
+	#[test]
+	#[should_panic(expected = "VMError: StackError on ip 1")]
+	fn str_stackerror() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::STR(1), Instruction::HLT];
+		vm.run(program);
+
 	}
 }
 
