@@ -152,6 +152,20 @@ mod tests {
 	use instructions::Instruction;
 
 	#[test]
+	fn psh() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5), Instruction::HLT];
+		vm.run(program);
+		assert_eq!( vm.stack.last().unwrap(), &5);
+	}
+	#[test]
+	fn pop() {
+		let mut vm = VM::new();
+		let program = vec![Instruction::PSH(5),Instruction::PSH(10), Instruction::POP, Instruction::HLT];
+		vm.run(program);
+		assert_eq!( vm.stack.last().unwrap(), &5);
+	}
+	#[test]
 	fn add() {
 		let mut vm = VM::new();
 		let program = vec![Instruction::PSH(5), Instruction::PSH(10),Instruction::ADD, Instruction::HLT];
