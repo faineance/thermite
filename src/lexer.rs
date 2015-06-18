@@ -1,11 +1,12 @@
 use std::str::CharIndices;
 use std::iter::Peekable;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq,Clone)]
 pub enum Token {
 	Identifier(String),
 	Value(i32),
 	Register(usize),
+	Whitespace
 
 }
 
@@ -88,8 +89,10 @@ impl<'a> Lexer<'a> {
 		None
 	}
 	fn handle_alphabetic(&mut self) -> Token {
-		//todo
-		unimplemented!()
+		let start = self.pos;
+		self.advance_while(is_alphabetic);
+		
+		Token::Identifier(self.input[start..self.pos].to_string())
 	}
 	fn handle_number(&mut self) -> Token {
 		let start = self.pos;
@@ -97,21 +100,28 @@ impl<'a> Lexer<'a> {
 		
 		Token::Value(self.input[start..self.pos].parse().unwrap())
 	}
+
 	fn handle_other(&mut self) -> Token {
-		//todo
-		unimplemented!()
+		self.advance_while(is_whitespace);
+
+		Token::Whitespace
+
 	}
 }
 
 impl<'a> Iterator for Lexer<'a> {
 	type Item = Token;
 	fn next(&mut self) -> Option<Token> {
+		
 		let token = match self.peek() {
 			Some(c) if is_alphabetic(c) => self.handle_alphabetic(),
 			Some(c) if is_numeric(c) => self.handle_number(),
 			Some(c) if !is_numeric(c) && !is_alphabetic(c) => self.handle_other(),
+			None => return None,
 			_ =>  unreachable!()
+
 		};
+
 		Some(token)
 		
 	}
@@ -126,6 +136,12 @@ fn is_numeric(c: char) -> bool {
 fn is_alphabetic(c: char) -> bool {
 	match c {
 		'a' ... 'z' | 'A' ... 'Z' => true,
+		_ => false
+	}
+}
+fn is_whitespace(c: char) -> bool {
+	match c {
+		' ' | '\t' => true,
 		_ => false
 	}
 }
@@ -166,6 +182,43 @@ mod tests {
 		let start = lexer.pos;
 		lexer.advance_while(is_alphabetic);
 		assert_eq!(&lexer.input[start..lexer.pos], "test");
+	}
+	#[test]
+	fn peek(){
+		let mut lexer = Lexer::new("The quick brown fox jumps over the 64 lazy dog");
+		let mut output = String::new();
+
+		loop {
+
+			match lexer.peek() {
+				Some(c) => {
+					output.push(c);
+
+				}
+				None => break
+			}
+			lexer.advance();
+		}
+		assert_eq!(output, "The quick brown fox jumps over the 64 lazy dog");
+		
+	}
+	#[test]
+	fn iter(){
+		let mut lexer = Lexer::new("The 42");
+		let mut output = vec![];
+
+		loop {
+			match lexer.next() {
+				Some(c) => {
+
+					output.push(c);
+
+				}
+				None => break
+			}
+		}
+		assert_eq!(output, vec![Token::Identifier("The".to_string()),Token::Whitespace, Token::Value(42)]);
+		
 	}
 	
 }
