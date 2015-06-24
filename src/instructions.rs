@@ -1,5 +1,3 @@
-use lexer::Token;
-// use parser::ParserErrorKind;
 pub type Register = usize;
 
 

@@ -33,10 +33,10 @@ fn main() {
 					let mut stdout = stdout();
 					let mut vm = VM::new();
 					loop {
-						stdout.write_all(PROMPT.as_bytes());
+						stdout.write_all(PROMPT.as_bytes()).unwrap();
 						stdout.flush().ok();
 						let mut input = String::new();
-						stdin.read_line(&mut input);
+						stdin.read_line(&mut input).unwrap();
 						
 						let tokens = lexer::tokenize(input.as_ref());
 						let mut program = parser::parse(tokens);
@@ -48,17 +48,16 @@ fn main() {
 				"run" => {
 					match arguments.next() {
 						Some(filename) => {
-							let mut s = String::new(); 
 							match File::open(filename) {
 								Ok(mut input) => {
 									let mut vm = VM::new();
 									let mut contents = String::new(); 
 
-									input.read_to_string(&mut contents);
+									input.read_to_string(&mut contents).unwrap();
 
 									let tokens = lexer::tokenize(contents.as_ref());
 
-									let mut program = parser::parse(tokens);
+									let program = parser::parse(tokens);
 
 									vm.run(program, false);
 								},

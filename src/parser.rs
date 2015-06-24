@@ -39,7 +39,7 @@ impl Parser {
 		}
 		None
 	}
-	fn next_instruction(&mut self) -> Option<Instruction> {
+	fn next_instruction(&mut self) -> Result<Option<Instruction>, ParserErrorKind> {
 		let instruction = match self.advance() {
 			Some(t) => {
 				match t {
@@ -98,18 +98,19 @@ impl Parser {
 								Instruction::STR(register as usize)
 							},
 							"hlt" => Instruction::HLT,
-							_ => Instruction::NOP
+							"nop" => Instruction::NOP,
+							_ => return Err(ParserErrorKind::InvalidInstruction)
 						}
 
 					},
-					_ => return None,
+					_ => return Err(ParserErrorKind::InvalidInstruction),
 				}
 
 			}
-			None => return None
+			None => return Ok(None)
 		};
 
-		Some(instruction)
+		Ok(Some(instruction))
 	}
 }
 impl Iterator for Parser {
@@ -117,11 +118,11 @@ impl Iterator for Parser {
 	fn next(&mut self) -> Option<Instruction> {
 
 		let instruction = match self.next_instruction() {
-			Some(i) => Some(i),
-			None => return None
+			Ok(i) => Some(i),
+			Err(e) => return None
 		};
 			
-		instruction
+		instruction.unwrap()
 
 	}
 }
