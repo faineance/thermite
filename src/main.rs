@@ -58,9 +58,9 @@ fn main() {
 									input.read_to_string(&mut contents);
 
 									let tokens = lexer::tokenize(contents.as_ref());
-									println!("{:?}", tokens );
+
 									let mut program = parser::parse(tokens);
-									println!("{:?}", program);
+
 									vm.run(program, false);
 								},
 								Err(error) => panic!("{}", error),

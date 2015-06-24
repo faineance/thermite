@@ -101,9 +101,6 @@ impl<'a> Lexer<'a> {
 
 	fn handle_whitespace(&mut self) {
 		self.advance_while(is_whitespace);
-
-	
-
 	}
 }
 
@@ -139,7 +136,7 @@ fn is_alphabetic(c: char) -> bool {
 }
 fn is_whitespace(c: char) -> bool {
 	match c {
-		' ' | '\t' => true,
+		' ' | '\t' | '\n' => true,
 		_ => false
 	}
 }
@@ -202,7 +199,7 @@ mod tests {
 	}
 	#[test]
 	fn iter(){
-		let mut lexer = Lexer::new("The 42");
+		let mut lexer = Lexer::new("The 42\n 42");
 		let mut output = vec![];
 
 		loop {
@@ -215,7 +212,7 @@ mod tests {
 				None => break
 			}
 		}
-		assert_eq!(output, vec![Token::Identifier("The".to_string()), Token::Value(42)]);
+		assert_eq!(output, vec![Token::Identifier("The".to_string()), Token::Value(42), Token::Value(42)]);
 	}
 	
 }
