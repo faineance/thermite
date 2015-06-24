@@ -1,6 +1,16 @@
 # vmachine [![Build Status](https://travis-ci.org/faineance/vmachine.svg)](https://travis-ci.org/faineance/vmachine) [![Coverage Status](https://coveralls.io/repos/faineance/vmachine/badge.svg)](https://coveralls.io/r/faineance/vmachine)
 A virtual machine 
 
+## Building
+You'll need a pretty up to date version of the nightly version of Rust.
+
+```cargo build``` to build.
+
+```cargo test``` to run tests.
+## Usage
+```cargo run repl``` to run repl.
+
+```cargo run run test.vm``` to run test.vm.
 ## Instruction Set
 #### Stack Operations
 Where ``s1`` is the TOS and ``s2`` is the element on the stack below the TOS.
