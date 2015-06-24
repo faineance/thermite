@@ -2,7 +2,7 @@
 A virtual machine 
 
 ## Building
-You'll need a pretty up to date version of the nightly version of Rust.
+You'll need a pretty up to date version of rust nightly.
 
 ```cargo build``` to build.
 
