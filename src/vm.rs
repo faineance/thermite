@@ -1,4 +1,5 @@
 use std::fmt;
+use std::collections::HashMap;
 use instructions::Instruction;
 const STACK_SIZE: usize = 256;
 const REG_SIZE: usize = 16; 
@@ -60,7 +61,7 @@ impl VM {
 			}
 			&Instruction::POP => {
 				match self.stack.pop() {
-					Some(val) => Ok(()),
+					Some(v) => Ok(()),
 					_ => Err(VMErrorKind::StackError)
 				}
 			}
