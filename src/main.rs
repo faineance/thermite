@@ -1,9 +1,11 @@
 #![feature(convert)] 
 mod vm;
 mod lexer;
+mod parser;
 mod instructions;
 use instructions::Instruction;
 use vm::VM;
+use lexer::tokenize;
 use std::env;
 use std::io::prelude::*;
 use std::fs::File;
@@ -36,9 +38,12 @@ fn main() {
 						stdout.flush().ok();
 						let mut input = String::new();
 						stdin.read_line(&mut input);
-
-
-
+						
+						let tokens = lexer::tokenize(input.as_ref());
+						let mut program = parser::parse(tokens);
+						program.push(Instruction::HLT);
+						
+						vm.run(program, true);
 					}	
 				},
 				"run" => {
@@ -48,13 +53,15 @@ fn main() {
 							match File::open(filename) {
 								Ok(mut input) => {
 									let mut vm = VM::new();
-									let mut program = String::new(); 
+									let mut contents = String::new(); 
 
-									input.read_to_string(&mut program);
+									input.read_to_string(&mut contents);
 
-									
-									let program = vec![Instruction::PSH(6),Instruction::PSH(7),Instruction::ADD, Instruction::OUT, Instruction::HLT];	
-									vm.run(program);
+									let tokens = lexer::tokenize(contents.as_ref());
+									println!("{:?}", tokens );
+									let mut program = parser::parse(tokens);
+									println!("{:?}", program);
+									vm.run(program, false);
 								},
 								Err(error) => panic!("{}", error),
 							}

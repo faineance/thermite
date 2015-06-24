@@ -27,11 +27,11 @@ impl VM {
 	pub fn new() -> VM {
 		VM { stack: Vec::with_capacity(STACK_SIZE), registers: [0; REG_SIZE], ip: 0, running: true, debug: true}
 	}
-	pub fn run(&mut self, program: Vec<Instruction>) {
+	pub fn run(&mut self, program: Vec<Instruction>, repl: bool) {
 
 		while self.running {
 			let instruction = &program[self.ip];
-
+			
 			match self.eval(instruction) {
 				Ok(_) => {},
 				Err(e) => {
@@ -42,7 +42,12 @@ impl VM {
 			}
 			self.ip += 1;
 		}
+		if repl {
+			self.ip = 0;
+			self.running = true;
+		}
 	}
+
 	fn eval(&mut self, instruction: &Instruction) -> Result<(), VMErrorKind> {
 		match instruction {
 			&Instruction::OUT => {

@@ -1,4 +1,7 @@
+use lexer::Token;
+// use parser::ParserErrorKind;
 pub type Register = usize;
+
 
 #[derive(Debug, PartialEq)]
 pub enum Instruction {
@@ -18,4 +21,38 @@ pub enum Instruction {
 	JNZ, //todo
 	HLT, // Halts program
     NOP, // Does nothing
-}
+} 
+
+// pub trait ToInstruction {
+//     fn to_instruction(&self) -> Option<Instruction>;
+// }
+
+// impl ToInstruction for Token {
+//     fn to_instruction(&self) -> Option<Instruction> {
+//         let instruction = match self {
+//         	&Token::Identifier(i) => {
+//         		match i.as_ref() {
+//         			"out" => Some(Instruction::OUT),
+//         			"psh" => Some(Instruction::PSH(None)),
+//         			"pop" => Some(Instruction::POP),
+//         			"add" => Some(Instruction::ADD),
+//         			"sub" => Some(Instruction::SUB),
+//         			"mul" => Some(Instruction::MUL),
+//         			"div" => Some(Instruction::DIV),
+//         			"set" => Some(Instruction::SET(None, None)),
+//         			"mov" => Some(Instruction::MOV(None, None)),
+//         			"ldr" => Some(Instruction::LDR(None)),
+//         			"str" => Some(Instruction::STR(None)),
+//         			"jmp" => Some(Instruction::JMP),
+//         			"jz"  => Some(Instruction::JZ ),
+//         			"jnz" => Some(Instruction::JNZ),
+//         			"hlt" => Some(Instruction::HLT),
+//         			"nop" => Some(Instruction::NOP),
+//         			_ => None,
+//         		}
+//         	}
+//             _ => unreachable!(),
+//         };
+//         instruction
+//     }
+// }

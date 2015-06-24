@@ -1,30 +1,28 @@
 use std::str::CharIndices;
 use std::iter::Peekable;
 
-#[derive(Debug, PartialEq,Clone)]
+#[derive(Debug, PartialEq)]
 pub enum Token {
 	Identifier(String),
 	Value(i32),
-	Register(usize),
-	Whitespace
-
 }
 
 pub fn tokenize(input: &str) -> Vec<Token> {
-	let mut tokens: Vec<Token> = Vec::new();
-	let mut tokenizer = Lexer::new(input);
+	let mut lexer = Lexer::new(input);
+	let mut output = vec![];
 
 	loop {
-		match tokenizer.next() {
+
+		match lexer.next() {
 			Some(t) => {
 
-				tokens.push(t);
+				output.push(t);
 
-			},
-			None => break 
+			}
+			None => break
 		}
 	}
-	tokens
+	output
 }
 
 pub struct Lexer<'a> {
@@ -66,7 +64,7 @@ impl<'a> Lexer<'a> {
 		}
 		None
 	}
-	fn advance_while<P: Fn(char) -> bool>(&mut self, p: P) {
+	fn advance_while<P: Fn(char)-> bool>(&mut self, p: P) {
 		loop {
 
 			match self.peek() {
@@ -101,10 +99,10 @@ impl<'a> Lexer<'a> {
 		Token::Value(self.input[start..self.pos].parse().unwrap())
 	}
 
-	fn handle_other(&mut self) -> Token {
+	fn handle_whitespace(&mut self) {
 		self.advance_while(is_whitespace);
 
-		Token::Whitespace
+	
 
 	}
 }
@@ -116,9 +114,9 @@ impl<'a> Iterator for Lexer<'a> {
 		let token = match self.peek() {
 			Some(c) if is_alphabetic(c) => self.handle_alphabetic(),
 			Some(c) if is_numeric(c) => self.handle_number(),
-			Some(c) if !is_numeric(c) && !is_alphabetic(c) => self.handle_other(),
+			Some(c) if is_whitespace(c) => { self.handle_whitespace(); self.next().unwrap()},
 			None => return None,
-			_ =>  unreachable!()
+			_ =>  return None,
 
 		};
 
@@ -209,16 +207,15 @@ mod tests {
 
 		loop {
 			match lexer.next() {
-				Some(c) => {
+				Some(t) => {
 
-					output.push(c);
+					output.push(t);
 
 				}
 				None => break
 			}
 		}
-		assert_eq!(output, vec![Token::Identifier("The".to_string()),Token::Whitespace, Token::Value(42)]);
-		
+		assert_eq!(output, vec![Token::Identifier("The".to_string()), Token::Value(42)]);
 	}
 	
 }
