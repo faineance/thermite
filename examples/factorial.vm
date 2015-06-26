@@ -1,5 +1,25 @@
-psh 13
-psh 12
-add
-out
-hlt
+# Compute factorial(12)
+# Register contents
+# 1 = count
+# 2 = result
+main:
+	set 1 12 
+	set 2 1
+	jmp factorial
+factorial:
+	ldr 1  
+	jz end # if TOS is zero we have finished and register 2 contains the final result.
+	ldr 2 # otherwise let result = result * count
+	ldr 1
+	mul
+	str 2
+
+	psh 1 # let count = count - 1
+	ldr 1
+	sub
+	str 1
+	jmp factorial # Repeat until count == 0
+end:
+	ldr 2
+	out
+	hlt
