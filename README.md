@@ -10,15 +10,15 @@ You'll need a pretty up to date version of rust nightly.
 ## Usage
 ```cargo run repl``` to run repl.
 
-```cargo run run test.vm``` to run test.vm.
+```cargo run -- run example/factorial.vm``` to run factorial.vm.
 ## Instruction Set
 #### Stack Operations
 Where ``s1`` is the TOS and ``s2`` is the element on the stack below the TOS.
 
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
-| psh         | psh ``n`` | push ``n`` onto the top of the stack                                    |
-| pop         | pop       | pop the top of the stack                                                 |
+| psh         | psh ``n`` | push ``n`` onto the TOS                                   |
+| pop         | pop       | pop the stack                                                 |
 | add         | add       | replace top two elements of the stack with their sum (``s1 + s2``)       |
 | sub         | sub       | replace top two elements of the stack with their difference (``s1 - s2``)|
 | mul         | mul       | replace top two elements of the stack with their product (``s1 * s2``)   |
@@ -33,9 +33,9 @@ Where ``s1`` is the TOS and ``s2`` is the element on the stack below the TOS.
 #### Jump Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
-| jmp         | jmp ``label``     | jump to the location ``label`` if not pop stack and continue                    |
-| jz          | jz  ``label``     | jump if TOS is zero to the location  ``label`` if not pop stack and continue   |
-| jnz         | jnz ``label``     | jump if TOS is nonzero to the location ``label`` if not pop stack and continue |
+| jmp         | jmp ``label``     | jump to  ``label`` if not pop stack and continue                    |
+| jz          | jz  ``label``     | jump if TOS is zero   ``label`` if not pop stack and continue   |
+| jnz         | jnz ``label``     | jump if TOS is nonzero  ``label`` if not pop stack and continue |
 #### Other Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
