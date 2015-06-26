@@ -33,9 +33,9 @@ Where ``s1`` is the TOS and ``s2`` is the element on the stack below the TOS.
 #### Jump Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
-| jmp         | jmp ``i``     | jump to the location ``i`` if not pop stack and continue                    |
-| jz          | jz  ``i``     | jump if TOS is zero to the location  ``i`` if not pop stack and continue   |
-| jnz         | jnz ``i``     | jump if TOS is nonzero to the location ``i`` if not pop stack and continue |
+| jmp         | jmp ``label``     | jump to the location ``label`` if not pop stack and continue                    |
+| jz          | jz  ``label``     | jump if TOS is zero to the location  ``label`` if not pop stack and continue   |
+| jnz         | jnz ``label``     | jump if TOS is nonzero to the location ``label`` if not pop stack and continue |
 #### Other Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
