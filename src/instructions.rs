@@ -16,7 +16,7 @@ pub enum Instruction {
 	STR(Register), //Store TOS to register
 	JMP(String), //todo
 	JZ(String), //todo
-	JNZ, //todo
+	JNZ(String), //todo
 	LBL(String),
 	HLT, // Halts program
     NOP, // Does nothing

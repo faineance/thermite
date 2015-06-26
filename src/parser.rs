@@ -114,6 +114,14 @@ impl Parser {
 								};
 								Instruction::JZ(loc)
 							},
+							"jnz" => {
+								
+								let loc = match self.advance().unwrap() {
+									Token::Identifier(loc) => loc,
+									_ => unimplemented!()
+								};
+								Instruction::JNZ(loc)
+							},
 							"hlt" => Instruction::HLT,
 							"nop" => Instruction::NOP,
 							_ if i.chars().last().unwrap() == ':' => {
