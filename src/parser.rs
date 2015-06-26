@@ -41,7 +41,7 @@ impl Parser {
 		None
 	}
 	fn next_instruction(&mut self) -> Result<Option<Instruction>, ParserErrorKind> {
-		let mut instruction = match self.advance() {
+		let instruction = match self.advance() {
 			Some(t) => {
 				match t {
 					Token::Identifier(mut i) => {
@@ -149,7 +149,7 @@ impl Iterator for Parser {
 
 		let instruction = match self.next_instruction() {
 			Ok(i) => Some(i),
-			Err(e) => return None
+			Err(e) => panic!("ParserError: {:?}", e)
 		};
 			
 		instruction.unwrap()

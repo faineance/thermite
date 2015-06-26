@@ -11,6 +11,7 @@ enum VMError {
 	StackError,
 	ZeroDivision,
 	MissingExitInstruction,
+	MissingMainLabel,
 	UndefinedLabel,
 }
 impl fmt::Debug for VM {
@@ -34,13 +35,12 @@ impl VM {
 	}
 	pub fn run(&mut self, program: Vec<Instruction>, repl: bool) {
 		if !repl {
-			self.jump_map = self.build_jump_map(program.clone());
+			self.jump_map = self.build_jump_map(program.clone()); 
 			match self.jump_map.get(&"main".to_string()) {
 				Some(&ip) => self.ip = ip + 1,
-				_ => panic!("No main function found"),
+				_ => panic!("VMError: {:?}", VMError::MissingMainLabel),
 			}
 		}
-
 		while self.running {
 			let instruction = &program[self.ip];
 			

@@ -8,6 +8,7 @@ pub enum Token {
 }
 
 pub fn tokenize(input: &str) -> Vec<Token> {
+	
 	let mut lexer = Lexer::new(input);
 	let mut output = vec![];
 
@@ -22,7 +23,6 @@ pub fn tokenize(input: &str) -> Vec<Token> {
 			None => break
 		}
 	}
-	
 	output
 }
 
@@ -112,12 +112,17 @@ impl<'a> Iterator for Lexer<'a> {
 		let token = match self.peek() {
 			Some(c) if is_alphabetic(c) => self.handle_alphabetic(),
 			Some(c) if is_numeric(c) => self.handle_number(),
-			Some(c) if is_whitespace(c) => { self.handle_whitespace(); self.next().unwrap()},
+			Some(c) if is_whitespace(c) => {
+				self.handle_whitespace(); 
+				match self.next() {
+					Some(t) => return Some(t),
+					None => return None,
+				}
+			},
 			None => return None,
 			_ =>  return None,
 
 		};
-
 		Some(token)
 		
 	}

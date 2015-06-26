@@ -20,7 +20,43 @@ Options:
 -h, --help      Show this message.
 --version   Display the version.
 ";
+fn repl() {
+	print!("Welcome to the vmachine repl.\nUse ctrl-c to exit.\n");
+	let mut stdin = stdin();
+	let mut stdout = stdout();
+	let mut vm = VM::new();
+	loop {
 
+		stdout.write_all(PROMPT.as_bytes()).unwrap();
+		stdout.flush().ok();
+		let mut input = String::new();
+		stdin.read_line(&mut input).unwrap();
+
+		let tokens = lexer::tokenize(input.as_ref());
+
+		let mut program = parser::parse(tokens);
+		program.push(Instruction::HLT);
+
+		vm.run(program, true);
+	}	
+}
+fn run(filename: String) {
+	match File::open(filename) {
+		Ok(mut input) => {
+			let mut vm = VM::new();
+			let mut contents = String::new(); 
+
+			input.read_to_string(&mut contents).unwrap();
+
+			let tokens = lexer::tokenize(contents.as_ref());
+
+			let program = parser::parse(tokens);
+
+			vm.run(program, false);
+		},
+		Err(error) => panic!("{}", error),
+	}
+}
 fn main() {
 	let mut arguments = env::args();
 	arguments.next();
@@ -28,41 +64,12 @@ fn main() {
 		Some(command) => {
 			match command.as_ref() {
 				"repl" => {
-					print!("Welcome to the vmachine repl.\nUse ctrl-c to exit.\n");
-					let mut stdin = stdin();
-					let mut stdout = stdout();
-					let mut vm = VM::new();
-					loop {
-						stdout.write_all(PROMPT.as_bytes()).unwrap();
-						stdout.flush().ok();
-						let mut input = String::new();
-						stdin.read_line(&mut input).unwrap();
-						
-						let tokens = lexer::tokenize(input.as_ref());
-						let mut program = parser::parse(tokens);
-						program.push(Instruction::HLT);
-						
-						vm.run(program, true);
-					}	
+					repl();
 				},
 				"run" => {
 					match arguments.next() {
 						Some(filename) => {
-							match File::open(filename) {
-								Ok(mut input) => {
-									let mut vm = VM::new();
-									let mut contents = String::new(); 
-
-									input.read_to_string(&mut contents).unwrap();
-
-									let tokens = lexer::tokenize(contents.as_ref());
-
-									let program = parser::parse(tokens);
-
-									vm.run(program, false);
-								},
-								Err(error) => panic!("{}", error),
-							}
+							run(filename);
 						}
 						_ => println!("No file specified\n{}", USAGE),
 					}
