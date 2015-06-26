@@ -103,6 +103,10 @@ impl<'a> Lexer<'a> {
 	fn handle_whitespace(&mut self) {
 		self.advance_while(is_whitespace);
 	}
+	fn handle_comment(&mut self) {
+		self.advance_while(|ch| ch != '\n');
+
+	}
 }
 
 impl<'a> Iterator for Lexer<'a> {
@@ -114,6 +118,13 @@ impl<'a> Iterator for Lexer<'a> {
 			Some(c) if is_numeric(c) => self.handle_number(),
 			Some(c) if is_whitespace(c) => {
 				self.handle_whitespace(); 
+				match self.next() {
+					Some(t) => return Some(t),
+					None => return None,
+				}
+			},
+			Some(c) if is_comment(c) => {
+				self.handle_comment(); 
 				match self.next() {
 					Some(t) => return Some(t),
 					None => return None,
@@ -142,7 +153,7 @@ fn is_alphabetic(c: char) -> bool {
 }
 fn is_whitespace(c: char) -> bool {
 	match c {
-		' ' | '\t' | '\n' => true,
+		' ' | '\t' | '\n' | '\r' => true,
 		_ => false
 	}
 }
@@ -176,12 +187,29 @@ mod tests {
 		assert_eq!(lexer.column, 16);
 	}
 	#[test]
+	fn handle_comment(){
+		let mut lexer = Lexer::new("psh 7# pushes 7\n psh 8");
+		let mut  output = vec![];
+
+		loop {
+			match lexer.next() {
+				Some(c) => {
+					output.push(c);
+
+				},
+				None => break
+			}
+		}
+		assert_eq!(output, vec![Token::Identifier("psh".to_string()), Token::Value(7), Token::Identifier("psh".to_string()), Token::Value(8)]);
+	}
+	#[test]
 	fn advance_while_numeric(){
 		let mut lexer = Lexer::new("4532test s34");
 		let start = lexer.pos;
 		lexer.advance_while(is_numeric);
 		assert_eq!(&lexer.input[start..lexer.pos], "4532");
 	}
+
 	#[test]
 	fn advance_while_alphabetic(){
 		let mut lexer = Lexer::new("test3 3test");
