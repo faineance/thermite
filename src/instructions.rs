@@ -1,7 +1,7 @@
 pub type Register = usize;
 
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Instruction {
 	OUT, // Print top of stack
     PSH(i32), // Pushes value to stack
@@ -14,9 +14,10 @@ pub enum Instruction {
 	MOV(Register,Register),
 	LDR(Register), //Pushes value in register to stack
 	STR(Register), //Store TOS to register
-	JMP, //todo
-	JZ, //todo
+	JMP(String), //todo
+	JZ(String), //todo
 	JNZ, //todo
+	LBL(String),
 	HLT, // Halts program
     NOP, // Does nothing
 } 

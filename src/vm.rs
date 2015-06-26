@@ -5,10 +5,13 @@ const STACK_SIZE: usize = 256;
 const REG_SIZE: usize = 16; 
 
 
+pub type VMResult<T> = Result<T, VMError>;
 #[derive(Debug,PartialEq)]
-enum VMErrorKind {
+enum VMError {
 	StackError,
 	ZeroDivision,
+	MissingExitInstruction,
+	UndefinedLabel,
 }
 impl fmt::Debug for VM {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -20,15 +23,23 @@ pub struct VM {
 	stack: Vec<i32>,
 	registers: [i32; REG_SIZE],
 	ip: usize,
+	jump_map: HashMap<String, usize>,
 	running: bool,
 	debug: bool,
 }
 
 impl VM {
 	pub fn new() -> VM {
-		VM { stack: Vec::with_capacity(STACK_SIZE), registers: [0; REG_SIZE], ip: 0, running: true, debug: true}
+		VM { stack: Vec::with_capacity(STACK_SIZE), registers: [0; REG_SIZE], ip: 0, jump_map: HashMap::new(), running: true, debug: true}
 	}
 	pub fn run(&mut self, program: Vec<Instruction>, repl: bool) {
+		if !repl {
+			self.jump_map = self.build_jump_map(program.clone());
+			match self.jump_map.get(&"main".to_string()) {
+				Some(&ip) => self.ip = ip + 1,
+				_ => panic!("No main function found"),
+			}
+		}
 
 		while self.running {
 			let instruction = &program[self.ip];
@@ -48,8 +59,20 @@ impl VM {
 			self.running = true;
 		}
 	}
-
-	fn eval(&mut self, instruction: &Instruction) -> Result<(), VMErrorKind> {
+	fn build_jump_map(&mut self, program: Vec<Instruction>) -> HashMap< String, usize> {
+		let mut jump_map: HashMap<String, usize> = HashMap::new();
+		
+		for (position, instruction) in program.iter().enumerate() {
+			match instruction {
+				&Instruction::LBL(ref s) => jump_map.insert(s.clone(),position),
+				_ => Some(0),
+			};
+			
+		}
+		println!("{:?}", jump_map );
+		jump_map
+	}
+	fn eval(&mut self, instruction: &Instruction) -> VMResult<()> {
 		match instruction {
 			&Instruction::OUT => {
 				println!("{:?}", self.stack.last().unwrap() );
@@ -62,7 +85,7 @@ impl VM {
 			&Instruction::POP => {
 				match self.stack.pop() {
 					Some(v) => Ok(()),
-					_ => Err(VMErrorKind::StackError)
+					_ => Err(VMError::StackError)
 				}
 			}
 			&Instruction::ADD => {
@@ -71,7 +94,7 @@ impl VM {
 						self.stack.push(a + b); 
 						Ok(())
 					},
-					_ => Err(VMErrorKind::StackError)
+					_ => Err(VMError::StackError)
 				}
 			}
 			&Instruction::SUB => {
@@ -80,7 +103,7 @@ impl VM {
 						self.stack.push(a - b); 
 						Ok(())
 					},
-					_ => Err(VMErrorKind::StackError)
+					_ => Err(VMError::StackError)
 				}
 
 			}
@@ -90,7 +113,7 @@ impl VM {
 						self.stack.push(a * b); 
 						Ok(())
 					},
-					_ => Err(VMErrorKind::StackError)
+					_ => Err(VMError::StackError)
 				}
 			}
 			&Instruction::DIV => {
@@ -98,14 +121,14 @@ impl VM {
 				match (self.stack.pop(), self.stack.pop()) {
 					(Some(a), Some(b)) => { 
 						if b == 0 {
-							return Err(VMErrorKind::ZeroDivision)
+							return Err(VMError::ZeroDivision)
 						} else { 
 							self.stack.push(a / b);
 						}
 						Ok(())
 						
 					},
-					_ => Err(VMErrorKind::StackError)
+					_ => Err(VMError::StackError)
 				}
 			}
 			&Instruction::SET(register, value) => {
@@ -126,20 +149,42 @@ impl VM {
 						self.registers[register as usize] = value;
 						Ok(())
 					},
-					_ => Err(VMErrorKind::StackError)
+					_ => Err(VMError::StackError)
 				}
 			}
-			&Instruction::JMP => {
-				unimplemented!()
-				// Ok(())
+			&Instruction::JMP(ref loc) => {
+				match self.jump_map.get(loc) {
+					Some(&ip) => self.ip = ip + 1,
+					_ => return Err(VMError::UndefinedLabel),
+				}
+				Ok(())
 			}
-			&Instruction::JZ => {
-				unimplemented!()
-				// Ok(())
+			&Instruction::JZ(ref loc) => {
+				match self.stack.pop() {
+					Some(value) if value == 0 => {
+						match self.jump_map.get(loc) {
+							Some(&ip) => self.ip = ip + 1,
+							_ => return Err(VMError::UndefinedLabel),
+						}
+					},
+					_ => return Ok(())
+				}
+				Ok(())
 			}
 			&Instruction::JNZ => {
-				unimplemented!()
-				// Ok(())
+				match self.stack.pop() {
+					Some(value) if value != 0 => {
+						match self.jump_map.get(loc) {
+							Some(&ip) => self.ip = ip + 1,
+							_ => return Err(VMError::UndefinedLabel),
+						}
+					},
+					_ => return Ok(())
+				}
+				Ok(())
+			}
+			&Instruction::LBL(ref loc) => {
+				Ok(())
 			}
 			&Instruction::HLT => {
 				self.running = false;

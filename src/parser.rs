@@ -16,6 +16,7 @@ pub fn parse(input: Vec<Token>) -> Vec<Instruction> {
 			None => break
 		}
 	}
+
 	program
 }
 pub struct Parser {
@@ -40,17 +41,17 @@ impl Parser {
 		None
 	}
 	fn next_instruction(&mut self) -> Result<Option<Instruction>, ParserErrorKind> {
-		let instruction = match self.advance() {
+		let mut instruction = match self.advance() {
 			Some(t) => {
 				match t {
-					Token::Identifier(i) => {
+					Token::Identifier(mut i) => {
 						match i.as_ref() {
+
 							"out" => Instruction::OUT,
 							"psh" => {
-								
 								let value = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unreachable!()
+									_ => unimplemented!()
 								};
 								Instruction::PSH(value)
 							},
@@ -62,22 +63,22 @@ impl Parser {
 							"set" => {
 								let register = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unreachable!()
+									_ => unimplemented!()
 								};
 								let value = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unreachable!()
+									_ => unimplemented!()
 								};
 								Instruction::SET(register as usize, value)
 							},
 							"mov" => {
 								let register1 = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unreachable!()
+									_ => unimplemented!()
 								};
 								let register2 = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unreachable!()
+									_ => unimplemented!()
 								};
 								Instruction::MOV(register1 as usize , register2 as usize)
 							},
@@ -85,7 +86,7 @@ impl Parser {
 								
 								let register = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unreachable!()
+									_ => unimplemented!()
 								};
 								Instruction::LDR(register as usize)
 							},
@@ -93,12 +94,33 @@ impl Parser {
 								
 								let register = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unreachable!()
+									_ => unimplemented!()
 								};
 								Instruction::STR(register as usize)
 							},
+							"jmp" => {
+								
+								let loc = match self.advance().unwrap() {
+									Token::Identifier(loc) => loc,
+									_ => unimplemented!()
+								};
+								Instruction::JMP(loc)
+							},
+							"jz" => {
+								
+								let loc = match self.advance().unwrap() {
+									Token::Identifier(loc) => loc,
+									_ => unimplemented!()
+								};
+								Instruction::JZ(loc)
+							},
 							"hlt" => Instruction::HLT,
 							"nop" => Instruction::NOP,
+							_ if i.chars().last().unwrap() == ':' => {
+								i.pop().unwrap();
+
+								Instruction::LBL(i)
+							},
 							_ => return Err(ParserErrorKind::InvalidInstruction)
 						}
 

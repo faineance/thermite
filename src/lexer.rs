@@ -22,6 +22,7 @@ pub fn tokenize(input: &str) -> Vec<Token> {
 			None => break
 		}
 	}
+	
 	output
 }
 
@@ -130,7 +131,7 @@ fn is_numeric(c: char) -> bool {
 }
 fn is_alphabetic(c: char) -> bool {
 	match c {
-		'a' ... 'z' | 'A' ... 'Z' => true,
+		'a' ... 'z' | 'A' ... 'Z' | ':' => true,
 		_ => false
 	}
 }
@@ -140,7 +141,12 @@ fn is_whitespace(c: char) -> bool {
 		_ => false
 	}
 }
-
+fn is_comment(c: char) -> bool {
+	match c {
+		'#' => true,
+		_ => false
+	}
+}
 
 #[cfg(test)]
 mod tests {
