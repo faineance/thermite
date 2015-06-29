@@ -26,6 +26,7 @@ pub struct Parser {
 #[derive(Debug,PartialEq)]
 pub enum ParserErrorKind {
 	InvalidInstruction,
+	InvalidArgument,
 }
 
 impl Parser {
@@ -51,7 +52,7 @@ impl Parser {
 							"psh" => {
 								let value = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unimplemented!()
+									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
 								Instruction::PSH(value)
 							},
@@ -63,22 +64,22 @@ impl Parser {
 							"set" => {
 								let register = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unimplemented!()
+									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
 								let value = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unimplemented!()
+									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
 								Instruction::SET(register as usize, value)
 							},
 							"mov" => {
 								let register1 = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unimplemented!()
+									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
 								let register2 = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unimplemented!()
+									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
 								Instruction::MOV(register1 as usize , register2 as usize)
 							},
@@ -86,7 +87,7 @@ impl Parser {
 								
 								let register = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unimplemented!()
+									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
 								Instruction::LDR(register as usize)
 							},
@@ -94,7 +95,7 @@ impl Parser {
 								
 								let register = match self.advance().unwrap() {
 									Token::Value(i) => i,
-									_ => unimplemented!()
+									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
 								Instruction::STR(register as usize)
 							},
@@ -102,7 +103,7 @@ impl Parser {
 								
 								let loc = match self.advance().unwrap() {
 									Token::Identifier(loc) => loc,
-									_ => unimplemented!()
+									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
 								Instruction::JMP(loc)
 							},
@@ -110,7 +111,7 @@ impl Parser {
 								
 								let loc = match self.advance().unwrap() {
 									Token::Identifier(loc) => loc,
-									_ => unimplemented!()
+									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
 								Instruction::JZ(loc)
 							},
@@ -118,7 +119,7 @@ impl Parser {
 								
 								let loc = match self.advance().unwrap() {
 									Token::Identifier(loc) => loc,
-									_ => unimplemented!()
+									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
 								Instruction::JNZ(loc)
 							},
