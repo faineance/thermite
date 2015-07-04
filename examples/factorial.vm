@@ -6,6 +6,7 @@ main:
 	set 1 12 
 	set 2 1
 	jmp factorial
+	
 factorial:
 	ldr 1  
 	jz end # if TOS is zero we have finished and register 2 contains the final result.

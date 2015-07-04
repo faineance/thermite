@@ -40,6 +40,10 @@ impl VM {
 				Some(&ip) => self.ip = ip,
 				_ => panic!("VMError: {:?}", VMError::MissingMainLabel),
 			}
+			match program.iter().position(|hlt| *hlt == Instruction::HLT) {
+				Some(_) => {},
+				_ => panic!("VMError: {:?}", VMError::MissingExitInstruction),
+			}
 		}
 		while self.running {
 			let instruction = &program[self.ip];
@@ -82,7 +86,7 @@ impl VM {
 			}
 			&Instruction::POP => {
 				match self.stack.pop() {
-					Some(v) => Ok(()),
+					Some(_) => Ok(()),
 					_ => Err(VMError::StackError)
 				}
 			}
