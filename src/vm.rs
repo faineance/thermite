@@ -6,6 +6,7 @@ const REG_SIZE: usize = 16;
 
 
 pub type VMResult<T> = Result<T, VMError>;
+
 #[derive(Debug,PartialEq)]
 enum VMError {
 	StackError,
@@ -185,7 +186,7 @@ impl VM {
 				Ok(())
 			}
 			&Instruction::LBL(ref loc) => {
-				
+
 				Ok(())
 			}
 			&Instruction::HLT => {

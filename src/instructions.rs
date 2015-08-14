@@ -1,26 +1,52 @@
+use std::string::ToString;
 pub type Register = usize;
 
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Instruction {
-	OUT, // Print top of stack
-    PSH(i32), // Pushes value to stack
-	POP, // Pops from stack
-	ADD, // Adds two top values on stack
+	OUT, /
+    PSH(i32), 
+	POP, 
+	ADD,
 	SUB, 
 	MUL,
 	DIV,
 	SET(Register,i32), 
 	MOV(Register,Register),
-	LDR(Register), //Pushes value in register to stack
-	STR(Register), //Store TOS to register
-	JMP(String), //todo
-	JZ(String), //todo
-	JNZ(String), //todo
+	LDR(Register), 
+	STR(Register),
+	JMP(String), 
+	JZ(String), 
+	JNZ(String), 
 	LBL(String),
-	HLT, // Halts program
-    NOP, // Does nothing
+	HLT, 
+    NOP, 
 } 
+
+
+impl ToString for Instruction {
+	fn to_string(&self) -> String {
+		match *self {
+            Instruction::OUT    => format!("out"),
+            Instruction::PSH(value) => format!("out {}", value),
+            Instruction::POP => format!("pop"),
+            Instruction::ADD => format!("add"),
+            Instruction::SUB => format!("sub"),
+            Instruction::MUL => format!("mul"),
+            Instruction::DIV => format!("div"),
+            Instruction::SET(register, value) => format!("set {} {}", register, value),
+            Instruction::MOV(register1, register2) => format!("mov {} {}", register1, register2),
+            Instruction::LDR(register) => format!("ldr {}", register),
+            Instruction::STR(register) => format!("str {}", register),
+            Instruction::JMP(ref label) => format!("jmp {}", label),
+            Instruction::JZ(ref label)  => format!("jz {}", label),
+            Instruction::JNZ(ref label) => format!("jnz {}", label),
+            Instruction::LBL(ref label) => format!("{}:", label),
+            Instruction::HLT => format!("hlt"),
+            Instruction::NOP => format!("nop")
+        }.to_string()
+	}
+}
 
 // pub trait ToInstruction {
 //     fn to_instruction(&self) -> Option<Instruction>;
