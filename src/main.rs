@@ -12,17 +12,17 @@ use std::io::{stdin, stdout};
 const PROMPT: &'static str = "\x1B[36mvm> \x1B[37m";
 static USAGE: &'static str = "
 Usage:
-vmach repl
-vmach run
-vmach -h | --help
-vmach --version
+thermite repl
+thermite run
+thermite -h | --help
+thermite --version
 Options:
 -h, --help      Show this message.
 --version   Display the version.
 ";
 fn repl() {
-	print!("Welcome to the vmachine repl.\nUse ctrl-c to exit.\n");
-	let mut stdin = stdin();
+	print!("Welcome to the thermite repl.\nUse ctrl-c to exit.\n");
+	let stdin = stdin();
 	let mut stdout = stdout();
 	let mut vm = VM::new();
 	loop {

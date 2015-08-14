@@ -26,12 +26,11 @@ pub struct VM {
 	ip: usize,
 	jump_map: HashMap<String, usize>,
 	running: bool,
-	debug: bool,
 }
 
 impl VM {
 	pub fn new() -> VM {
-		VM { stack: Vec::with_capacity(STACK_SIZE), registers: [0; REG_SIZE], ip: 0, jump_map: HashMap::new(), running: true, debug: true}
+		VM { stack: Vec::with_capacity(STACK_SIZE), registers: [0; REG_SIZE], ip: 0, jump_map: HashMap::new(), running: true}
 	}
 	pub fn run(&mut self, program: Vec<Instruction>, repl: bool) {
 		if !repl {
@@ -186,6 +185,7 @@ impl VM {
 				Ok(())
 			}
 			&Instruction::LBL(ref loc) => {
+				
 				Ok(())
 			}
 			&Instruction::HLT => {
