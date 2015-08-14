@@ -1,4 +1,4 @@
-# vmachine [![Build Status](https://travis-ci.org/faineance/vmachine.svg)](https://travis-ci.org/faineance/vmachine) [![Coverage Status](https://coveralls.io/repos/faineance/vmachine/badge.svg?branch=master)](https://coveralls.io/r/faineance/vmachine?branch=master)
+# thermite [![Build Status](https://travis-ci.org/faineance/thermite.svg)](https://travis-ci.org/faineance/thermite) [![Coverage Status](https://coveralls.io/repos/faineance/thermite/badge.svg?branch=master)](https://coveralls.io/r/faineance/thermite?branch=master)
 A virtual machine 
 
 ## Building
@@ -44,4 +44,4 @@ Where ``s1`` is the TOS and ``s2`` is the element on the stack below the TOS.
 | nop         | nop       | do nothing                                                                |
 
 ## License
-vmachine is licensed under the [MIT License](/LICENSE).
+thermite is licensed under the [MIT License](/LICENSE).
