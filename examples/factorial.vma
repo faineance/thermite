@@ -3,9 +3,10 @@
 # 1 = count
 # 2 = result
 main:
-	set 1 12 
-	set 2 1
-	jmp factorial
+	psh 12
+	str 1
+	psh 1 
+	str 2
 	
 factorial:
 	ldr 1  

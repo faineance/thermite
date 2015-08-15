@@ -1,0 +1,40 @@
+# Compute fibonacci sequence
+# Register contents
+# 0 = count
+# 1 = result
+main:
+	psh 44 # 44th number is the highest i32 can handle
+	str 0
+
+	psh 1
+	str 1  # a
+
+	psh 1
+	str 2  # b
+
+
+fibonacci:
+	ldr 0
+	jz end
+
+	ldr 1 
+	ldr 2
+	add   
+	str 3 # c = a + b
+	ldr 2 
+
+	str 1 # a = b
+	ldr 3
+	str 2 # b = c
+
+	ldr 3
+	out   
+
+	psh 1 # let count = count - 1
+	ldr 0
+	sub
+	str 0
+
+	jmp fibonacci
+end:
+	hlt
