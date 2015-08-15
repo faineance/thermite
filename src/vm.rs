@@ -278,7 +278,7 @@ mod tests {
 	#[test]
 	fn ldr() {
 		let mut vm = VM::new();
-		let program = vec![Instruction::LBL("main".to_string()),Instruction::SET(1, 15), Instruction::LDR(1), Instruction::HLT];
+		let program = vec![Instruction::LBL("main".to_string()),Instruction::PSH(15), Instruction::STR(1), Instruction::LDR(1), Instruction::HLT];
 		vm.run(program, false);
 		assert_eq!( vm.stack.last().unwrap(), &15);
 	}
