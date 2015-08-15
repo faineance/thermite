@@ -1,7 +1,5 @@
 # Compute fibonacci sequence
-# Register contents
-# 0 = count
-# 1 = result
+
 main:
 	psh 44 # 44th number is the highest i32 can handle
 	str 0
