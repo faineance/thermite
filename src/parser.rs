@@ -47,7 +47,7 @@ impl Parser {
 				match t {
 					Token::Identifier(mut i) => {
 						match i.as_ref() {
-
+							"nop" => Instruction::NOP,
 							"out" => Instruction::OUT,
 							"psh" => {
 								let value = match self.advance().unwrap() {
@@ -61,28 +61,6 @@ impl Parser {
 							"sub" => Instruction::SUB,
 							"mul" => Instruction::MUL,
 							"div" => Instruction::DIV,
-							"set" => {
-								let register = match self.advance().unwrap() {
-									Token::Value(i) => i,
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let value = match self.advance().unwrap() {
-									Token::Value(i) => i,
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::SET(register as usize, value)
-							},
-							"mov" => {
-								let register1 = match self.advance().unwrap() {
-									Token::Value(i) => i,
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let register2 = match self.advance().unwrap() {
-									Token::Value(i) => i,
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::MOV(register1 as usize , register2 as usize)
-							},
 							"ldr" => {
 								
 								let register = match self.advance().unwrap() {
@@ -124,7 +102,6 @@ impl Parser {
 								Instruction::JNZ(loc)
 							},
 							"hlt" => Instruction::HLT,
-							"nop" => Instruction::NOP,
 							_ if i.chars().last().unwrap() == ':' => {
 								i.pop().unwrap();
 

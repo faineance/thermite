@@ -76,6 +76,9 @@ impl VM {
 	}
 	fn eval(&mut self, instruction: &Instruction) -> VMResult<()> {
 		match instruction {
+			&Instruction::NOP => {
+				Ok(())
+			}
 			&Instruction::OUT => {
 				println!("{:?}", self.stack.pop().unwrap() );
 				Ok(())
@@ -133,14 +136,6 @@ impl VM {
 					_ => Err(VMError::StackError)
 				}
 			}
-			&Instruction::SET(register, value) => {
-				self.registers[register as usize] = value;
-				Ok(())
-			}
-			&Instruction::MOV(register1, register2) => {
-				self.registers[register2 as usize] = self.registers[register1 as usize];
-				Ok(())
-			}
 			&Instruction::LDR(register) => {
 				self.stack.push(self.registers[register as usize] as i32 );
 				Ok(())
@@ -191,9 +186,6 @@ impl VM {
 			}
 			&Instruction::HLT => {
 				self.running = false;
-				Ok(())
-			}
-			&Instruction::NOP => {
 				Ok(())
 			}
 		}
@@ -282,20 +274,6 @@ mod tests {
 		let mut vm = VM::new();
 		let program = vec![Instruction::LBL("main".to_string()),Instruction::PSH(0),Instruction::PSH(10),Instruction::DIV, Instruction::HLT];
 		vm.run(program, false);
-	}
-	#[test]
-	fn set() {
-		let mut vm = VM::new();
-		let program = vec![Instruction::LBL("main".to_string()),Instruction::SET(1, 15), Instruction::HLT];
-		vm.run(program, false);
-		assert_eq!( vm.registers[1], 15);
-	}
-	#[test]
-	fn mov() {
-		let mut vm = VM::new();
-		let program = vec![Instruction::LBL("main".to_string()),Instruction::SET(1, 15), Instruction::MOV(1, 2), Instruction::HLT];
-		vm.run(program, false);
-		assert_eq!( vm.registers[2], 15);
 	}
 	#[test]
 	fn ldr() {
