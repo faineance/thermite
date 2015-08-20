@@ -1,4 +1,4 @@
-# thermite [![Build Status](https://travis-ci.org/faineance/thermite.svg)](https://travis-ci.org/faineance/thermite) [![Build status](https://ci.appveyor.com/api/projects/status/fq1iw0x3xx9jqqld?svg=true)](https://ci.appveyor.com/project/faineance/thermite) [![Coverage Status](https://coveralls.io/repos/faineance/thermite/badge.svg?branch=master)](https://coveralls.io/r/faineance/thermite?branch=master)
+# thermite [![Build Status](https://travis-ci.org/faineance/thermite.svg)](https://travis-ci.org/faineance/thermite) [![Build status](https://ci.appveyor.com/api/projects/status/fq1iw0x3xx9jqqld?svg=true)](https://ci.appveyor.com/project/faineance/thermite) [![Circle CI](https://circleci.com/gh/faineance/thermite.svg?style=svg)](https://circleci.com/gh/faineance/thermite) [![Coverage Status](https://coveralls.io/repos/faineance/thermite/badge.svg?branch=master)](https://coveralls.io/r/faineance/thermite?branch=master)
 A virtual machine 
 
 ## Building
