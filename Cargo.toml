@@ -2,3 +2,11 @@
 name = "thermite"
 version = "0.1.0"
 authors = ["faineance <faineance@users.noreply.github.com>"]
+
+[lib]
+name = "thermite"
+path = "src/lib/lib.rs"
+
+[[bin]]
+name = "thermite"
+path = "src/bin/main.rs"
