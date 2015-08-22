@@ -1,19 +1,14 @@
 #![crate_type = "bin"]
-
 extern crate thermite;
 
-
-
-use thermite::instructions::Instruction;
-use thermite::vm::VM;
-use thermite::lexer;
-use thermite::parser;
 use std::env;
-use std::io::prelude::*;
-use std::fs::File;
-use std::io::{stdin, stdout};
 
-const PROMPT: &'static str = "\x1B[36mvm> \x1B[37m";
+mod interactive;
+mod runner;
+use runner::Runner;
+use interactive::Interactive;
+
+
 static USAGE: &'static str = "
 Usage:
 thermite repl
@@ -24,43 +19,8 @@ Options:
 -h, --help      Show this message.
 --version   Display the version.
 ";
-fn repl() {
-	print!("Welcome to the thermite repl.\nUse ctrl-c to exit.\n");
-	let stdin = stdin();
-	let mut stdout = stdout();
-	let mut vm = VM::new();
-	loop {
 
-		stdout.write_all(PROMPT.as_bytes()).unwrap();
-		stdout.flush().ok();
-		let mut input = String::new();
-		stdin.read_line(&mut input).unwrap();
 
-		let tokens = lexer::tokenize(input.as_ref());
-
-		let mut program = parser::parse(tokens);
-		program.push(Instruction::HLT);
-
-		vm.run(program, true);
-	}	
-}
-fn run(filename: String) {
-	match File::open(filename) {
-		Ok(mut input) => {
-			let mut vm = VM::new();
-			let mut contents = String::new(); 
-
-			input.read_to_string(&mut contents).unwrap();
-
-			let tokens = lexer::tokenize(contents.as_ref());
-
-			let program = parser::parse(tokens);
-
-			vm.run(program, false);
-		},
-		Err(error) => panic!("{}", error),
-	}
-}
 fn main() {
 	let mut arguments = env::args();
 	arguments.next();
@@ -68,12 +28,14 @@ fn main() {
 		Some(command) => {
 			match command.as_ref() {
 				"repl" => {
-					repl();
+					let mut interactive = Interactive::new();
+					interactive.run()
 				},
 				"run" => {
 					match arguments.next() {
 						Some(filename) => {
-							run(filename);
+							let mut runner = Runner::new(filename);
+							runner.run();
 						}
 						_ => println!("No file specified\n{}", USAGE),
 					}
