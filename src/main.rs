@@ -2,6 +2,8 @@ mod vm;
 mod lexer;
 mod parser;
 mod instructions;
+mod registers;
+
 use instructions::Instruction;
 use vm::VM;
 use lexer::tokenize;
@@ -9,6 +11,7 @@ use std::env;
 use std::io::prelude::*;
 use std::fs::File;
 use std::io::{stdin, stdout};
+
 const PROMPT: &'static str = "\x1B[36mvm> \x1B[37m";
 static USAGE: &'static str = "
 Usage:
