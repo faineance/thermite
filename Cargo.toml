@@ -10,4 +10,4 @@ doctest = false
 [[bin]]
 name = "thermite"
 path = "src/bin/main.rs"
-doctest = false
+test = false
