@@ -3,25 +3,19 @@
 # ra = count
 # rb = result
 main:
-	psh 12
-	str ra
-	psh 1 
-	str rb
+	str 12 ra
+	str 1 rb
 	
 factorial:
-	ldr ra  
-	jz end # if TOS is zero we have finished and register 2 contains the final result.
-	ldr rb # otherwise let result = result * count
-	ldr ra
-	mul
-	str rb
+	 
+	jz ra end # if TOS is zero we have finished and register 2 contains the final result.
+	mul rb ra rb  # otherwise let result = result * count
+	
 
-	psh 1 # let count = count - 1
-	ldr ra
-	sub
-	str ra
-	jmp factorial # Repeat until count == 0
+	str 1 rc # let count = count - 1
+	sub ra rc ra
+
+	jmp factorial # Repeat until count is 0
 end:
-	ldr rb
-	out
+	out rb
 	hlt

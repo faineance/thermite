@@ -1,37 +1,26 @@
 # Compute fibonacci sequence
 
 main:
-	psh 44 # 44th number is the highest i32 can handle
-	str rd
+	str 44 rd # 44th number is the highest i32 can handle
 
-	psh 1
-	str ra  # a
-
-	psh 1
-	str rb  # b
+	str 1 ra  # a
+	str 1 rb  # b
 
 
 fibonacci:
-	ldr rd
-	jz end
 
-	ldr ra 
-	ldr rb
-	add   
-	str rc # c = a + b
-	ldr rb 
+	jz rd end
 
-	str ra # a = b
-	ldr rc
-	str rb # b = c
+	add ra rb rc # c = a + b
 
-	ldr rc
-	out   
+	#TODO fix this!
+	add rb re ra # a = b + 0 
+	add rc re rb # b = c + 0
 
-	psh 1 # let count = count - 1
-	ldr rd
-	sub
-	str rd
+	out rc
+
+	str 1 rf # let count = count - 1
+	sub rd rf rd
 
 	jmp fibonacci
 end:

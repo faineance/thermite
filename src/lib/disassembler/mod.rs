@@ -4,7 +4,6 @@ pub mod registers;
 
 #[cfg(test)]
 mod tests {
-	use super::*;
 	use std::fmt::Write;
 	use instructions::Instruction;
 	use registers::Register;
@@ -17,66 +16,46 @@ mod tests {
 	}
 	#[test]
 	fn out() {
-		let instruction = Instruction::OUT;
+
+		let instruction = Instruction::OUT(Register::RA);
 		let mut string = String::new(); 
 		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "out")
-	}
-	#[test]
-	fn psh() {
-		let instruction = Instruction::PSH(5);
-		let mut string = String::new(); 
-		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "psh 5")
-	}
-	#[test]
-	fn pop() {
-		let instruction = Instruction::POP;
-		let mut string = String::new(); 
-		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "pop")
+		assert_eq!(string, "out ra")
 	}
 	#[test]
 	fn add() {
-		let instruction = Instruction::ADD;
+		let instruction = Instruction::ADD(Register::RA, Register::RB, Register::RC);
 		let mut string = String::new(); 
 		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "add")
+		assert_eq!(string, "add ra rb rc")
 	}
 	#[test]
 	fn sub() {
-		let instruction = Instruction::SUB;
+		let instruction = Instruction::SUB(Register::RA, Register::RB, Register::RC);
 		let mut string = String::new(); 
 		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "sub")
+		assert_eq!(string, "sub ra rb rc")
 	}
 	#[test]
 	fn mul() {
-		let instruction = Instruction::MUL;
+		let instruction = Instruction::MUL(Register::RA, Register::RB, Register::RC);
 		let mut string = String::new(); 
 		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "mul")
+		assert_eq!(string, "mul ra rb rc")
 	}
 	#[test]
 	fn div() {
-		let instruction = Instruction::DIV;
+		let instruction = Instruction::DIV(Register::RA, Register::RB, Register::RC);
 		let mut string = String::new(); 
 		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "div")
-	}
-	#[test]
-	fn ldr() {
-		let instruction = Instruction::LDR(Register::RA);
-		let mut string = String::new(); 
-		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "ldr ra")
+		assert_eq!(string, "div ra rb rc")
 	}
 	#[test]
 	fn str() {
-		let instruction = Instruction::STR(Register::RA);
+		let instruction = Instruction::STR(6, Register::RA);
 		let mut string = String::new(); 
 		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "str ra")
+		assert_eq!(string, "str 6 ra")
 	}
 	#[test]
 	fn jmp() {
@@ -87,17 +66,17 @@ mod tests {
 	}
 	#[test]
 	fn jz() {
-		let instruction = Instruction::JZ("end".to_string());
+		let instruction = Instruction::JZ(Register::RA, "end".to_string());
 		let mut string = String::new(); 
 		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "jz end")
+		assert_eq!(string, "jz ra end")
 	}
 	#[test]
 	fn jnz() {
-		let instruction = Instruction::JNZ("end".to_string());
+		let instruction = Instruction::JNZ(Register::RA, "end".to_string());
 		let mut string = String::new(); 
 		write!(&mut string, "{}", instruction).unwrap();
-		assert_eq!(string, "jnz end")
+		assert_eq!(string, "jnz ra end")
 	}
 	#[test]
 	fn lbl() {

@@ -48,33 +48,83 @@ impl Parser {
 					Token::Identifier(mut i) => {
 						match i.as_ref() {
 							"nop" => Instruction::NOP,
-							"out" => Instruction::OUT,
-							"psh" => {
+							"out" => {
+								let register = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								Instruction::OUT(register)
+							}
+							"add" => {
+								let source = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								let target = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								let destination = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								Instruction::ADD(source, target, destination)
+							},
+							"sub" => {
+								let source = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								let target = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								let destination = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								Instruction::SUB(source, target, destination)
+							},
+							"mul" => {
+								let source = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								let target = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								let destination = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								Instruction::MUL(source, target, destination)
+							},
+							"div" => {
+								let source = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								let target = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								let destination = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
+								Instruction::DIV(source, target, destination)
+							},							
+							"str" => {
 								let value = match self.advance().unwrap() {
 									Token::Value(i) => i,
 									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
-								Instruction::PSH(value)
-							},
-							"pop" => Instruction::POP,
-							"add" => Instruction::ADD,
-							"sub" => Instruction::SUB,
-							"mul" => Instruction::MUL,
-							"div" => Instruction::DIV,
-							"ldr" => {
 								let register = match self.advance().unwrap() {
 									Token::Identifier(r) => Register::from(r),
 									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
-								Instruction::LDR(register)
-							},
-							"str" => {
-								
-								let register = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::STR(register)
+								Instruction::STR(value, register)
 							},
 							"jmp" => {
 								
@@ -85,20 +135,26 @@ impl Parser {
 								Instruction::JMP(loc)
 							},
 							"jz" => {
-								
+								let register = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
 								let loc = match self.advance().unwrap() {
 									Token::Identifier(loc) => loc,
 									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
-								Instruction::JZ(loc)
+								Instruction::JZ(register, loc)
 							},
 							"jnz" => {
-								
+								let register = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserErrorKind::InvalidArgument)
+								};
 								let loc = match self.advance().unwrap() {
 									Token::Identifier(loc) => loc,
 									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
-								Instruction::JNZ(loc)
+								Instruction::JNZ(register, loc)
 							},
 							"hlt" => Instruction::HLT,
 							_ if i.chars().last().unwrap() == ':' => {
@@ -128,7 +184,7 @@ impl Iterator for Parser {
 			Ok(i) => Some(i),
 			Err(e) => panic!("ParserError: {:?}", e)
 		};
-			
+
 		instruction.unwrap()
 
 	}
@@ -141,26 +197,10 @@ mod tests {
 	use super::*;
 	use lexer::Token;
 	use instructions::Instruction;
-	#[test]
-	fn advance(){
-		let tokens = vec![Token::Identifier("psh".to_string()), Token::Value(6)];
-		let mut parser = Parser::new(tokens);
-		let mut output = vec![];
-
-		loop {
-			match parser.advance() {
-				Some(c) => {
-					output.push(c);
-
-				},
-				None => break
-			}
-		}
-		assert_eq!(output, vec![Token::Identifier("psh".to_string()), Token::Value(6)]);
-	}
+	use registers::Register;
 	#[test]
 	fn iter(){
-		let tokens = vec![Token::Identifier("psh".to_string()), Token::Value(6)];
+		let tokens = vec![Token::Identifier("str".to_string()), Token::Value(6), Token::Identifier("ra".to_string())];
 		let mut parser = Parser::new(tokens);
 		let mut output = vec![];
 
@@ -172,6 +212,6 @@ mod tests {
 				None => break
 			}
 		}
-		assert_eq!(output, vec![Instruction::PSH(6)]);
+		assert_eq!(output, vec![Instruction::STR(6, Register::RA)]);
 	}
 }
