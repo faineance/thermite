@@ -10,7 +10,7 @@ You'll need a pretty up to date version of rust nightly.
 ## Usage
 ```cargo run repl``` to run repl.
 
-```cargo run -- run example/factorial.vm``` to run factorial.vm.
+```cargo run -- run example/factorial.vma``` to run factorial.vma.
 ## Instruction Set
 #### Stack Operations
 Where ``s1`` is the TOS and ``s2`` is the element on the stack below the TOS.
