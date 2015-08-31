@@ -1,27 +1,27 @@
 # Compute factorial(12)
 # Register contents
-# 1 = count
-# 2 = result
+# ra = count
+# rb = result
 main:
 	psh 12
-	str 1
+	str ra
 	psh 1 
-	str 2
+	str rb
 	
 factorial:
-	ldr 1  
+	ldr ra  
 	jz end # if TOS is zero we have finished and register 2 contains the final result.
-	ldr 2 # otherwise let result = result * count
-	ldr 1
+	ldr rb # otherwise let result = result * count
+	ldr ra
 	mul
-	str 2
+	str rb
 
 	psh 1 # let count = count - 1
-	ldr 1
+	ldr ra
 	sub
-	str 1
+	str ra
 	jmp factorial # Repeat until count == 0
 end:
-	ldr 2
+	ldr rb
 	out
 	hlt

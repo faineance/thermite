@@ -2,7 +2,7 @@ use std::fmt;
 use std::collections::HashMap;
 use instructions::Instruction;
 const STACK_SIZE: usize = 256;
-const REG_SIZE: usize = 16; 
+const REG_SIZE: usize = 6; 
 
 
 pub type VMResult<T> = Result<T, VMError>;
@@ -143,7 +143,8 @@ impl VM {
 			&Instruction::STR(register) => {
 				match self.stack.pop() {
 					Some(value) => {
-						self.registers[register as usize] = value;
+
+						self.registers[register  as usize] = value;
 						Ok(())
 					},
 					_ => Err(VMError::StackError)
@@ -196,7 +197,7 @@ impl VM {
 mod tests {
 	use super::*;
 	use instructions::Instruction;
-
+	use registers::Register;
 	#[test]
 	fn psh() {
 		let mut vm = VM::new();
@@ -278,16 +279,16 @@ mod tests {
 	#[test]
 	fn ldr() {
 		let mut vm = VM::new();
-		let program = vec![Instruction::LBL("main".to_string()),Instruction::PSH(15), Instruction::STR(1), Instruction::LDR(1), Instruction::HLT];
+		let program = vec![Instruction::LBL("main".to_string()),Instruction::PSH(15), Instruction::STR(Register::RA), Instruction::LDR(Register::RA), Instruction::HLT];
 		vm.run(program, false);
 		assert_eq!( vm.stack.last().unwrap(), &15);
 	}
 	#[test]
 	fn str() {
 		let mut vm = VM::new();
-		let program = vec![Instruction::LBL("main".to_string()),Instruction::PSH(5), Instruction::STR(1), Instruction::HLT];
+		let program = vec![Instruction::LBL("main".to_string()),Instruction::PSH(5), Instruction::STR(Register::RA), Instruction::HLT];
 		vm.run(program, false);
-		assert_eq!( vm.registers[1], 5);
+		assert_eq!( vm.registers[0], 5);
 	}
 	#[test]
 	fn jmp() {
@@ -315,7 +316,7 @@ mod tests {
 	#[should_panic(expected = "VMError: StackError on ip 2")]
 	fn str_stackerror() {
 		let mut vm = VM::new();
-		let program = vec![Instruction::LBL("main".to_string()),Instruction::STR(1), Instruction::HLT];
+		let program = vec![Instruction::LBL("main".to_string()),Instruction::STR(Register::RA), Instruction::HLT];
 		vm.run(program, false);
 
 	}

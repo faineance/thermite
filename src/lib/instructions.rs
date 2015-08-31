@@ -1,21 +1,11 @@
-use std::string::ToString;
-
-// macro_rules! instruction {
-//     ($x:expr) => (($x & 0xFF));
-// }
-
-
-pub type Register = usize;
-
-// pub type Bytecode = u16;
-
+use registers::Register;
 
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Instruction {
 	NOP, 
 	OUT, 
-      PSH(i32), 
+	PSH(i32), 
 	POP, 
 	ADD,
 	SUB, 
@@ -28,7 +18,7 @@ pub enum Instruction {
 	JNZ(String), 
 	LBL(String),
 	HLT, 
-} 
+}
 
 
 // impl ToString for Instruction {
@@ -74,3 +64,5 @@ pub enum Instruction {
 // 		}
 // 	}
 // }
+
+

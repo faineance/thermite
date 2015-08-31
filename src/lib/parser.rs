@@ -1,7 +1,7 @@
 use std::vec;
 use lexer::Token;
 use instructions::Instruction;
-
+use registers::Register;
 pub fn parse(input: Vec<Token>) -> Vec<Instruction> {
 	let mut parser = Parser::new(input);
 	let mut program = vec![];
@@ -62,20 +62,19 @@ impl Parser {
 							"mul" => Instruction::MUL,
 							"div" => Instruction::DIV,
 							"ldr" => {
-								
 								let register = match self.advance().unwrap() {
-									Token::Value(i) => i,
+									Token::Identifier(r) => Register::from(r),
 									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
-								Instruction::LDR(register as usize)
+								Instruction::LDR(register)
 							},
 							"str" => {
 								
 								let register = match self.advance().unwrap() {
-									Token::Value(i) => i,
+									Token::Identifier(r) => Register::from(r),
 									_ => return Err(ParserErrorKind::InvalidArgument)
 								};
-								Instruction::STR(register as usize)
+								Instruction::STR(register)
 							},
 							"jmp" => {
 								

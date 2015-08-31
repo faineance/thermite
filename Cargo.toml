@@ -6,7 +6,8 @@ authors = ["faineance <faineance@users.noreply.github.com>"]
 [lib]
 name = "thermite"
 path = "src/lib/lib.rs"
-
+doctest = false
 [[bin]]
 name = "thermite"
 path = "src/bin/main.rs"
+doctest = false

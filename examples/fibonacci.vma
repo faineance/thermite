@@ -2,36 +2,36 @@
 
 main:
 	psh 44 # 44th number is the highest i32 can handle
-	str 0
+	str rd
 
 	psh 1
-	str 1  # a
+	str ra  # a
 
 	psh 1
-	str 2  # b
+	str rb  # b
 
 
 fibonacci:
-	ldr 0
+	ldr rd
 	jz end
 
-	ldr 1 
-	ldr 2
+	ldr ra 
+	ldr rb
 	add   
-	str 3 # c = a + b
-	ldr 2 
+	str rc # c = a + b
+	ldr rb 
 
-	str 1 # a = b
-	ldr 3
-	str 2 # b = c
+	str ra # a = b
+	ldr rc
+	str rb # b = c
 
-	ldr 3
+	ldr rc
 	out   
 
 	psh 1 # let count = count - 1
-	ldr 0
+	ldr rd
 	sub
-	str 0
+	str rd
 
 	jmp fibonacci
 end:
