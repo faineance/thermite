@@ -16,7 +16,7 @@ You'll need a pretty up to date version of rust nightly.
 Arithmetic operations are in the format
 
 
-| ``instruction`` | ``source`` | ``target`` | ``destination |
+| ``instruction`` | ``source`` | ``target`` | ``destination`` |
 |-----------------|------------|------------|---------------|
 
 | Instruction | Usage                     | Function                                                                  |
