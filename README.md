@@ -14,17 +14,9 @@ You'll need a pretty up to date version of rust nightly.
 ## Instruction Set
 #### Arithmetic Operations
 Arithmetic operations are in the format
-<<<<<<< HEAD
-| ``instruction`` | ``source`` | ``target`` | ``destination |
-|-----------------|------------|------------|---------------|
-
-=======
-
-
 | ``instruction`` | ``source`` | ``target`` | ``destination`` |
 |-----------------|------------|------------|---------------|
 
->>>>>>> 8a1e8f77d63cd89e3a9fb94ef5d5d77c2f52b3aa
 | Instruction | Usage                     | Function                                                                  |
 |-------------|---------------------------|---------------------------------------------------------------------------|
 | add         | add ``ra`` ``rb`` ``rc``  | set ``rc`` to the sum of ``ra`` and ``rb``                                |
