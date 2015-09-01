@@ -12,32 +12,31 @@ You'll need a pretty up to date version of rust nightly.
 
 ```cargo run -- run example/factorial.vma``` to run factorial.vma.
 ## Instruction Set
-#### Stack Operations
-Where ``s1`` is the TOS and ``s2`` is the element on the stack below the TOS.
+#### Arithmetic Operations
+Arithmetic operations are in the format
+| ``instruction`` | ``source`` | ``target`` | ``destination |
+|-----------------|------------|------------|---------------|
 
-| Instruction | Usage     | Function                                                                  |
-|-------------|-----------|---------------------------------------------------------------------------|
-| psh         | psh ``n`` | push ``n`` onto the TOS                                   |
-| pop         | pop       | pop the stack                                                 |
-| add         | add       | replace top two elements of the stack with their sum (``s1 + s2``)       |
-| sub         | sub       | replace top two elements of the stack with their difference (``s1 - s2``)|
-| mul         | mul       | replace top two elements of the stack with their product (``s1 * s2``)   |
-| div         | div       | replace top two elements of the stack with their product (``s1 / s2``)   |
+| Instruction | Usage                     | Function                                                                  |
+|-------------|---------------------------|---------------------------------------------------------------------------|
+| add         | add ``ra`` ``rb`` ``rc``  | set ``rc`` to the sum of ``ra`` and ``rb``                                |
+| sub         | sub ``ra`` ``rb`` ``rc``  | set ``rc`` to the difference of ``ra`` and ``rb``        |
+| mul         | mul ``ra`` ``rb`` ``rc``  | set ``rc`` to the product of ``ra`` and ``rb``          |
+| div         | div ``ra`` ``rb`` ``rc``  | set ``rc`` to the quotient of ``ra`` and ``rb``      |
 #### Register Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
-| ldr         | ldr ``r`` | push value in ``r`` to TOS                    |
-| str         | str ``r`` | pop and store TOS to ``r``                    |
+| str         | str ``6`` ``ra`` | store 6 to ``ra``                    |
 #### Jump Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
-| jmp         | jmp ``label``     | jump to  ``label`` if not pop stack and continue                    |
-| jz          | jz  ``label``     | jump if TOS is zero   ``label`` if not pop stack and continue   |
-| jnz         | jnz ``label``     | jump if TOS is nonzero  ``label`` if not pop stack and continue |
+| jmp         | jmp ``label``     | jump to  ``label``                     |
+| jz          | jz  ``ra`` ``label``     | jump if ``ra`` is zero to ``label``    |
+| jnz         | jnz ``ra`` ``label``     | jump if ``ra`` is nonzero to ``label``  |
 #### Other Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
-| out         | out       | print top of stack                                                       |
+| out         | out ``ra``       | print the contents of ``ra``                                                       |
 | hlt         | hlt       | halt the program                                                          |
 | nop         | nop       | do nothing                                                                |
 
