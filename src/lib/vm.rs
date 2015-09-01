@@ -20,6 +20,7 @@ impl fmt::Debug for VM {
 }
 
 pub struct VM {
+    program: Vec<Instruction>,
     registers: [i32; REG_SIZE],
     ip: usize,
     jump_map: HashMap<String, usize>,
@@ -28,20 +29,20 @@ pub struct VM {
 
 impl VM {
     pub fn new() -> VM {
-        VM { registers: [0; REG_SIZE], ip: 0, jump_map: HashMap::new(), running: true}
+        VM {  program: Vec::new(), registers: [0; REG_SIZE], ip: 0, jump_map: HashMap::new(), running: true}
     }
-    pub fn run(&mut self, program: Vec<Instruction>, repl: bool) {
-        if !repl {
-            self.jump_map = self.build_jump_map(program.clone()); 
-            match self.jump_map.get(&"main".to_string()) {
-                Some(&ip) => self.ip = ip,
-                _ => panic!("VMError: {:?}", VMError::MissingMainLabel),
-            }
-            match program.iter().position(|hlt| *hlt == Instruction::HLT) {
-                Some(_) => {},
-                _ => panic!("VMError: {:?}", VMError::MissingExitInstruction),
-            }
+    pub fn run(&mut self, program: Vec<Instruction>) {
+        
+        self.jump_map = self.build_jump_map(program.clone()); 
+        match self.jump_map.get(&"main".to_string()) {
+            Some(&ip) => self.ip = ip,
+            _ => panic!("VMError: {:?}", VMError::MissingMainLabel),
         }
+        match program.iter().position(|hlt| *hlt == Instruction::HLT) {
+            Some(_) => {},
+            _ => panic!("VMError: {:?}", VMError::MissingExitInstruction),
+        }
+        
         while self.running {
             let instruction = &program[self.ip];
 
@@ -54,10 +55,24 @@ impl VM {
             }
             self.ip += 1;
         }
-        if repl {
-            self.ip = 0;
-            self.running = true;
+    }
+    pub fn interactive(&mut self, instruction: Instruction) {
+        self.program.push(instruction);
+    
+        let ref i = self.program[self.ip].clone();
+        match i {
+                &Instruction::LBL(ref s) => self.jump_map.insert(s.clone(),self.ip),
+                _ => Some(0)
+        };
+        match self.eval(&i) {
+            Ok(_) => {},
+            Err(e) => {
+                println!("{:?}", self);
+                println!("VMError: {:?} on ip {:?}", e, self.ip + 1); 
+            }
         }
+        self.ip += 1;
+        
     }
     fn build_jump_map(&mut self, program: Vec<Instruction>) -> HashMap< String, usize> {
         let mut jump_map: HashMap<String, usize> = HashMap::new();
@@ -160,7 +175,7 @@ mod tests {
                     Instruction::STR(5, Register::RB), 
                     Instruction::ADD(Register::RA, Register::RB, Register::RC), 
                     Instruction::HLT];
-        vm.run(program, false);
+        vm.run(program);
         assert_eq!( vm.registers[Register::RC as usize], 15);
     }
     #[test]
@@ -171,7 +186,7 @@ mod tests {
                     Instruction::STR(5, Register::RB), 
                     Instruction::SUB(Register::RA, Register::RB, Register::RC), 
                     Instruction::HLT];
-        vm.run(program, false);
+        vm.run(program);
         assert_eq!( vm.registers[Register::RC as usize], 5);
     }
     #[test]
@@ -182,7 +197,7 @@ mod tests {
                     Instruction::STR(5, Register::RB), 
                     Instruction::MUL(Register::RA, Register::RB, Register::RC),
                     Instruction::HLT];
-        vm.run(program, false);
+        vm.run(program);
         assert_eq!( vm.registers[Register::RC as usize], 50);
     }
     #[test]
@@ -193,7 +208,7 @@ mod tests {
                     Instruction::STR(5, Register::RB),
                     Instruction::DIV(Register::RA, Register::RB, Register::RC),
                     Instruction::HLT];
-        vm.run(program, false);
+        vm.run(program);
         assert_eq!( vm.registers[Register::RC as usize], 2);
     }
     #[test]
@@ -205,7 +220,7 @@ mod tests {
                     Instruction::STR(0, Register::RB),
                     Instruction::DIV(Register::RA, Register::RB, Register::RC),
                     Instruction::HLT];
-        vm.run(program, false);
+        vm.run(program);
         assert_eq!( vm.registers[Register::RC as usize], 2);
     }
 
@@ -219,7 +234,7 @@ mod tests {
                     Instruction::ADD(Register::RA, Register::RB, Register::RB),
                     Instruction::LBL("test".to_string()), 
                     Instruction::HLT];
-        vm.run(program, false);
+        vm.run(program);
         assert_eq!( vm.registers[Register::RB as usize], 5);
     }
     #[test]
@@ -233,7 +248,7 @@ mod tests {
                     Instruction::ADD(Register::RC, Register::RB, Register::RB),
                     Instruction::LBL("test".to_string()), 
                     Instruction::HLT];
-        vm.run(program, false);
+        vm.run(program);
         assert_eq!( vm.registers[Register::RB as usize], 5);
     }
     #[test]
@@ -247,7 +262,7 @@ mod tests {
                     Instruction::ADD(Register::RC, Register::RB, Register::RB),
                     Instruction::LBL("test".to_string()), 
                     Instruction::HLT];
-        vm.run(program, false);
+        vm.run(program);
         assert_eq!( vm.registers[Register::RB as usize], 5);
     }
 }

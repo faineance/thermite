@@ -1,7 +1,6 @@
 use std::io::{stdin, stdout};
 use std::io::{Stdin, Stdout};
 use std::io::prelude::*;
-use thermite::instructions::Instruction;
 use thermite::vm::VM;
 use thermite::lexer;
 use thermite::parser;
@@ -33,12 +32,17 @@ impl Interactive {
 			self.stdout.flush().ok();
 			let mut input = String::new();
 			self.stdin.read_line(&mut input).unwrap();
+			if input.trim() == "" {continue}
 			let tokens = lexer::tokenize(input.as_ref());
 
-			let mut program = parser::parse(tokens);
-			program.push(Instruction::HLT);
+			let program = parser::parse(tokens);
+			match program.len() {
+				1 => self.vm.interactive(program[0].clone()),
+				_ => println!("Interactive Mode: Only one instruction allowed by line")
+			}
+			
 
-			self.vm.run(program, true);
+			
 		}
 	}
 }

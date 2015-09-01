@@ -27,7 +27,7 @@ impl Runner {
 
 				let program = parser::parse(tokens);
 
-				vm.run(program, false);
+				vm.run(program);
 			},
 			Err(error) => panic!("{}", error),
 		}
