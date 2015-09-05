@@ -1,7 +1,10 @@
 use std::vec;
 use lexer::Token;
 use instructions::Instruction;
+use instructions::{IOType, ArithmaticType, BitwiseType, ShiftType, BranchType, ControlType, AssignmentType};
 use registers::Register;
+pub type ParserResult<T> = Result<Option<T>, ParserError>;
+
 pub fn parse(input: Vec<Token>) -> Vec<Instruction> {
 	let mut parser = Parser::new(input);
 	let mut program = vec![];
@@ -16,7 +19,6 @@ pub fn parse(input: Vec<Token>) -> Vec<Instruction> {
 			None => break
 		}
 	}
-
 	program
 }
 pub struct Parser {
@@ -24,7 +26,7 @@ pub struct Parser {
 }
 
 #[derive(Debug,PartialEq)]
-pub enum ParserErrorKind {
+pub enum ParserError {
 	InvalidInstruction,
 	InvalidArgument,
 }
@@ -41,139 +43,133 @@ impl Parser {
 		}
 		None
 	}
-	fn next_instruction(&mut self) -> Result<Option<Instruction>, ParserErrorKind> {
-		let instruction = match self.advance() {
+	fn handle_io(&mut self, kind: IOType) -> ParserResult<Instruction> {
+		let register = match self.advance().unwrap() {
+			Token::Identifier(r) => Register::from(r),
+			_ => return Err(ParserError::InvalidArgument)
+		};
+		Ok(Some(Instruction::IO(kind, register)))
+	}
+	fn handle_arithmatic(&mut self, kind: ArithmaticType) -> ParserResult<Instruction> {
+		let source = match self.advance().unwrap() {
+			Token::Identifier(r) => Register::from(r),
+			_ => return Err(ParserError::InvalidArgument)
+		};
+		let target = match self.advance().unwrap() {
+			Token::Identifier(r) => Register::from(r),
+			_ => return Err(ParserError::InvalidArgument)
+		};
+		let destination = match self.advance().unwrap() {
+			Token::Identifier(r) => Register::from(r),
+			_ => return Err(ParserError::InvalidArgument)
+		};
+		Ok(Some(Instruction::Arithmatic(kind, source, target, destination)))
+	}
+	fn handle_bitwise(&mut self, kind: BitwiseType) -> ParserResult<Instruction> {
+		let source = match self.advance().unwrap() {
+			Token::Identifier(r) => Register::from(r),
+			_ => return Err(ParserError::InvalidArgument)
+		};
+		let target = match self.advance().unwrap() {
+			Token::Identifier(r) => Register::from(r),
+			_ => return Err(ParserError::InvalidArgument)
+		};
+		let destination = match self.advance().unwrap() {
+			Token::Identifier(r) => Register::from(r),
+			_ => return Err(ParserError::InvalidArgument)
+		};
+		Ok(Some(Instruction::Bitwise(kind, source, target, destination)))
+	}
+	fn handle_branch(&mut self, kind: BranchType) -> ParserResult<Instruction> {
+		let label = match self.advance().unwrap() {
+			Token::Identifier(r) => r,
+			_ => return Err(ParserError::InvalidArgument)
+		};
+		Ok(Some(Instruction::Branch(kind, label)))
+	}
+	fn handle_control(&mut self, kind: ControlType) -> ParserResult<Instruction> {
+		Ok(Some(Instruction::Control(kind)))
+	}
+	fn handle_assignment(&mut self, kind: AssignmentType) -> ParserResult<Instruction> {
+		let register = match self.advance().unwrap() {
+			Token::Identifier(r) => Register::from(r),
+			_ => return Err(ParserError::InvalidArgument)
+		};
+		Ok(Some(Instruction::Assignment(kind, register)))
+	}
+
+	fn next_instruction(&mut self) -> ParserResult<Instruction> {
+		match self.advance() {
 			Some(t) => {
 				match t {
 					Token::Identifier(mut i) => {
 						match i.as_ref() {
-							"nop" => Instruction::NOP,
-							"out" => {
-								let register = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::OUT(register)
-							}
-							"add" => {
-								let source = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let target = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let destination = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::ADD(source, target, destination)
-							},
-							"sub" => {
-								let source = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let target = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let destination = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::SUB(source, target, destination)
-							},
-							"mul" => {
-								let source = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let target = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let destination = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::MUL(source, target, destination)
-							},
-							"div" => {
-								let source = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let target = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let destination = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::DIV(source, target, destination)
-							},							
-							"str" => {
-								let value = match self.advance().unwrap() {
-									Token::Value(i) => i,
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								let register = match self.advance().unwrap() {
-									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::STR(value, register)
-							},
-							"jmp" => {
-								
-								let loc = match self.advance().unwrap() {
-									Token::Identifier(loc) => loc,
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::JMP(loc)
-							},
+
+							"nop" => Ok(Some(Instruction::NOP)),
+							"hlt" => Ok(Some(Instruction::HLT)),
+
+							"out" => self.handle_io(IOType::OUT),
+							"in" => self.handle_io(IOType::IN),
+
+							"add" => self.handle_arithmatic(ArithmaticType::ADD),
+							"sub" => self.handle_arithmatic(ArithmaticType::SUB),
+							"mul" => self.handle_arithmatic(ArithmaticType::MUL),
+							"div" => self.handle_arithmatic(ArithmaticType::DIV),
+							"max" => self.handle_arithmatic(ArithmaticType::MAX),
+							"min" => self.handle_arithmatic(ArithmaticType::MIN),
+
+							"and" => self.handle_bitwise(BitwiseType::AND),
+							"or"  => self.handle_bitwise(BitwiseType::OR),
+							"xor" => self.handle_bitwise(BitwiseType::XOR),
+							"shr" => self.handle_bitwise(BitwiseType::SHIFT(ShiftType::RIGHT)),
+							"shl" => self.handle_bitwise(BitwiseType::SHIFT(ShiftType::LEFT)),
+
+							"jmp" => self.handle_branch(BranchType::UNCONDITIONAL),
 							"jz" => {
 								let register = match self.advance().unwrap() {
 									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
+									_ => return Err(ParserError::InvalidArgument)
 								};
-								let loc = match self.advance().unwrap() {
-									Token::Identifier(loc) => loc,
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::JZ(register, loc)
-							},
+								self.handle_branch(BranchType::ZERO(register))
+							}
 							"jnz" => {
 								let register = match self.advance().unwrap() {
 									Token::Identifier(r) => Register::from(r),
-									_ => return Err(ParserErrorKind::InvalidArgument)
+									_ => return Err(ParserError::InvalidArgument)
 								};
-								let loc = match self.advance().unwrap() {
-									Token::Identifier(loc) => loc,
-									_ => return Err(ParserErrorKind::InvalidArgument)
-								};
-								Instruction::JNZ(register, loc)
+								self.handle_branch(BranchType::NOTZERO(register))
 							},
-							"hlt" => Instruction::HLT,
+
+							"str" => {
+								let value = match self.advance().unwrap() {
+									Token::Value(i) => i,
+									_ => return Err(ParserError::InvalidArgument)
+								};
+								self.handle_assignment(AssignmentType::STR(value))
+							},
+							"cpy" => {
+								let register = match self.advance().unwrap() {
+									Token::Identifier(r) => Register::from(r),
+									_ => return Err(ParserError::InvalidArgument)
+								};
+								self.handle_assignment(AssignmentType::CPY(register))
+							},
 							_ if i.chars().last().unwrap() == ':' => {
 								i.pop().unwrap();
-
-								Instruction::LBL(i)
+								self.handle_control(ControlType::LBL(i))
 							},
-							_ => return Err(ParserErrorKind::InvalidInstruction)
+
+							_ => return Err(ParserError::InvalidInstruction)
 						}
 
 					},
-					_ => return Err(ParserErrorKind::InvalidInstruction),
+					_ => return Err(ParserError::InvalidInstruction),
 				}
 
 			}
 			None => return Ok(None)
-		};
+		}
 
-		Ok(Some(instruction))
 	}
 }
 impl Iterator for Parser {
@@ -197,6 +193,8 @@ mod tests {
 	use super::*;
 	use lexer::Token;
 	use instructions::Instruction;
+	use instructions::{IOType, ArithmaticType, BitwiseType, ShiftType, BranchType, ControlType, AssignmentType};
+
 	use registers::Register;
 	#[test]
 	fn iter(){
@@ -212,6 +210,6 @@ mod tests {
 				None => break
 			}
 		}
-		assert_eq!(output, vec![Instruction::STR(6, Register::RA)]);
+		assert_eq!(output, vec![Instruction::Assignment(AssignmentType::STR(6), Register::RA)]);
 	}
 }

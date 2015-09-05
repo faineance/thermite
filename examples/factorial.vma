@@ -7,14 +7,12 @@ main:
 	str 1 rb
 	
 factorial:
-	 
 	jz ra end # if TOS is zero we have finished and register 2 contains the final result.
 	mul rb ra rb  # otherwise let result = result * count
 	
 
 	str 1 rc # let count = count - 1
 	sub ra rc ra
-
 	jmp factorial # Repeat until count is 0
 end:
 	out rb

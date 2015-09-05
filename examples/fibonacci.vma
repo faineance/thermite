@@ -1,7 +1,6 @@
 # Compute fibonacci sequence
-
 main:
-	str 44 rd # 44th number is the highest i32 can handle
+	str 44 rd # 44th number is the highest type i32 can handle
 
 	str 1 ra  # a
 	str 1 rb  # b
@@ -13,9 +12,9 @@ fibonacci:
 
 	add ra rb rc # c = a + b
 
-	#TODO fix this!
-	add rb re ra # a = b + 0 
-	add rc re rb # b = c + 0
+	cpy rb ra # a = b
+	cpy rc rb # b = c
+
 
 	out rc
 

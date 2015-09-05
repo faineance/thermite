@@ -40,9 +40,6 @@ impl Interactive {
 				1 => self.vm.interactive(program[0].clone()),
 				_ => println!("Interactive Mode: Only one instruction allowed by line")
 			}
-			
-
-			
 		}
 	}
 }

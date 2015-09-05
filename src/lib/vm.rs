@@ -1,5 +1,7 @@
 use std::fmt;
 use std::collections::HashMap;
+use std::cmp;
+use instructions::{IOType, ArithmaticType, BitwiseType, ShiftType, BranchType, ControlType, AssignmentType};
 use instructions::Instruction;
 const REG_SIZE: usize = 6; 
 
@@ -61,7 +63,13 @@ impl VM {
     
         let ref i = self.program[self.ip].clone();
         match i {
-                &Instruction::LBL(ref s) => self.jump_map.insert(s.clone(),self.ip),
+                &Instruction::Control(ref kind) => {
+                    match kind {
+                        &ControlType::LBL(ref s) => {
+                            self.jump_map.insert(s.clone(),self.ip)
+                        },
+                    }
+                },
                 _ => Some(0)
         };
         match self.eval(&i) {
@@ -74,12 +82,18 @@ impl VM {
         self.ip += 1;
         
     }
-    fn build_jump_map(&mut self, program: Vec<Instruction>) -> HashMap< String, usize> {
+    fn build_jump_map(&mut self, program: Vec<Instruction>) -> HashMap<String, usize> {
         let mut jump_map: HashMap<String, usize> = HashMap::new();
 
         for (position, instruction) in program.iter().enumerate() {
             match instruction {
-                &Instruction::LBL(ref s) => jump_map.insert(s.clone(),position),
+                &Instruction::Control(ref kind) => {
+                        match kind {
+                            &ControlType::LBL(ref s) => {
+                                jump_map.insert(s.clone(),position)
+                            },
+                        }
+                },
                 _ => Some(0),
             };
 
@@ -90,71 +104,110 @@ impl VM {
         match instruction {
             &Instruction::NOP => {
                 Ok(())
-            }
-            &Instruction::OUT(register) => {
-                println!("{:?}", self.registers[register as usize]);
-                Ok(())
-            }
-            &Instruction::ADD(source, target, destination) => {
-                self.registers[destination as usize] = self.registers[source as usize] + self.registers[target as usize];
-                Ok(())
-            }
-            &Instruction::SUB(source, target, destination) => {
-                self.registers[destination as usize] = self.registers[source as usize] - self.registers[target as usize];
-                Ok(())
-            }
-            &Instruction::MUL(source, target, destination) => {
-                self.registers[destination as usize] = self.registers[source as usize] * self.registers[target as usize];
-                Ok(())
-            }
-            &Instruction::DIV(source, target, destination) => {
-                match self.registers[target as usize] {
-                    0 => return Err(VMError::ZeroDivision),
-                    _ => {
-                        self.registers[destination as usize] = self.registers[source as usize] / self.registers[target as usize];
-                        Ok(())
-                    }
-                }
-
-            }
-
-            &Instruction::STR(value, register) => {
-                self.registers[register  as usize] = value;
-                Ok(())
-            }
-            &Instruction::JMP(ref loc) => {
-                match self.jump_map.get(loc) {
-                    Some(&ip) => self.ip = ip,
-                    _ => return Err(VMError::UndefinedLabel),
-                }
-                Ok(())
-            }
-            &Instruction::JZ(register, ref loc) => {
-
-                if self.registers[register as usize] == 0 {
-                    match self.jump_map.get(loc) {
-                        Some(&ip) => self.ip = ip,
-                        _ => return Err(VMError::UndefinedLabel),
-                    }
-                }
-
-                Ok(())
-            }
-            &Instruction::JNZ(register, ref loc) => {
-                if self.registers[register as usize] != 0 {
-                    match self.jump_map.get(loc) {
-                        Some(&ip) => self.ip = ip,
-                        _ => return Err(VMError::UndefinedLabel),
-                    }
-                }
-                Ok(())
-            }
-            &Instruction::LBL(ref loc) => {
-
-                Ok(())
-            }
+            },
             &Instruction::HLT => {
                 self.running = false;
+                Ok(())
+            }
+            &Instruction::IO(ref kind, register) => {
+                match kind {
+                    &IOType::OUT => println!("{:?}", self.registers[register as usize]),
+                    &IOType::IN => unimplemented!(),
+                }
+                Ok(())
+            },
+            &Instruction::Arithmatic(ref kind, source, target, destination) => {
+                match kind {
+                    &ArithmaticType::ADD => {
+                        self.registers[destination as usize] = self.registers[source as usize] + self.registers[target as usize]
+                    },
+                    &ArithmaticType::SUB => {
+                        self.registers[destination as usize] = self.registers[source as usize] - self.registers[target as usize]
+                    },
+                    &ArithmaticType::MUL => {
+                        self.registers[destination as usize] = self.registers[source as usize] * self.registers[target as usize]
+                    },
+                    &ArithmaticType::DIV => {
+                        match self.registers[target as usize] {
+                            0 => return Err(VMError::ZeroDivision),
+                            _ => {
+                                self.registers[destination as usize] = self.registers[source as usize] / self.registers[target as usize];
+                            }
+                        }
+                    },
+                    &ArithmaticType::MAX => {
+                        self.registers[destination as usize] = cmp::max(self.registers[source as usize], self.registers[target as usize])
+                    },
+                    &ArithmaticType::MIN => {
+                        self.registers[destination as usize] = cmp::min(self.registers[source as usize],self.registers[target as usize])
+                    },
+                }
+                Ok(())
+            },
+            &Instruction::Bitwise(ref kind, source, target, destination) => {
+                match kind {
+                    &BitwiseType::AND => {
+                        self.registers[destination as usize] = self.registers[source as usize] & self.registers[target as usize]
+                    },
+                    &BitwiseType::OR => {
+                        self.registers[destination as usize] = self.registers[source as usize] | self.registers[target as usize]
+                    },
+                    &BitwiseType::XOR => {
+                        self.registers[destination as usize] = self.registers[source as usize] ^ self.registers[target as usize]
+                    },
+                    &BitwiseType::SHIFT(ref kind) => {
+                        match kind {
+                            &ShiftType::LEFT => {
+                                 self.registers[destination as usize] = self.registers[source as usize] << self.registers[target as usize]
+                            },
+                            &ShiftType::RIGHT => {
+                                 self.registers[destination as usize] = self.registers[source as usize] >> self.registers[target as usize]
+                            },
+                        }
+                    }
+                }
+                Ok(())
+            },
+            &Instruction::Branch(ref kind, ref label) => {
+                match kind {
+                    &BranchType::UNCONDITIONAL => {
+                        match self.jump_map.get(label) {
+                            Some(&ip) => self.ip = ip,
+                            _ => return Err(VMError::UndefinedLabel),
+                        }
+                    },
+                    &BranchType::NOTZERO(register) => {
+                        if self.registers[register as usize] != 0 {
+                            match self.jump_map.get(label) {
+                                Some(&ip) => self.ip = ip,
+                                _ => return Err(VMError::UndefinedLabel),
+                            }
+                        }
+                    },
+                    &BranchType::ZERO(register) => {
+                        if self.registers[register as usize] == 0 {
+                            match self.jump_map.get(label) {
+                                Some(&ip) => self.ip = ip,
+                                _ => return Err(VMError::UndefinedLabel),
+                            }
+                        }
+
+                    }
+                }
+                Ok(())
+            },
+            &Instruction::Control(ref kind) => {
+                match kind {
+                    &ControlType::LBL(ref label) => {
+                    }
+                }
+                Ok(())
+            }
+            &Instruction::Assignment(ref kind, register) => {
+                match kind {
+                    &AssignmentType::STR(value) => self.registers[register  as usize] = value,
+                    &AssignmentType::CPY(register2) => self.registers[register as usize] = self.registers[register2 as usize],
+                }
                 Ok(())
             }
         }
@@ -166,14 +219,14 @@ mod tests {
     use super::*;
     use instructions::Instruction;
     use registers::Register;
-
+    use instructions::{IOType, ArithmaticType, BitwiseType, ShiftType, BranchType, ControlType, AssignmentType};
     #[test]
     fn add() {
         let mut vm = VM::new();
-        let program = vec![Instruction::LBL("main".to_string()), 
-                    Instruction::STR(10, Register::RA),
-                    Instruction::STR(5, Register::RB), 
-                    Instruction::ADD(Register::RA, Register::RB, Register::RC), 
+        let program = vec![Instruction::Control(ControlType::LBL("main".to_string())), 
+                    Instruction::Assignment(AssignmentType::STR(10), Register::RA),
+                    Instruction::Assignment(AssignmentType::STR(5), Register::RB),
+                    Instruction::Arithmatic(ArithmaticType::ADD, Register::RA, Register::RB, Register::RC),
                     Instruction::HLT];
         vm.run(program);
         assert_eq!( vm.registers[Register::RC as usize], 15);
@@ -181,10 +234,10 @@ mod tests {
     #[test]
     fn sub() {
         let mut vm = VM::new();
-        let program = vec![Instruction::LBL("main".to_string()), 
-                    Instruction::STR(10, Register::RA),
-                    Instruction::STR(5, Register::RB), 
-                    Instruction::SUB(Register::RA, Register::RB, Register::RC), 
+        let program = vec![Instruction::Control(ControlType::LBL("main".to_string())), 
+                    Instruction::Assignment(AssignmentType::STR(10), Register::RA),
+                    Instruction::Assignment(AssignmentType::STR(5), Register::RB),
+                    Instruction::Arithmatic(ArithmaticType::SUB, Register::RA, Register::RB, Register::RC),
                     Instruction::HLT];
         vm.run(program);
         assert_eq!( vm.registers[Register::RC as usize], 5);
@@ -192,10 +245,10 @@ mod tests {
     #[test]
     fn mul() {
         let mut vm = VM::new();
-        let program = vec![Instruction::LBL("main".to_string()),
-                    Instruction::STR(10, Register::RA),
-                    Instruction::STR(5, Register::RB), 
-                    Instruction::MUL(Register::RA, Register::RB, Register::RC),
+        let program = vec![Instruction::Control(ControlType::LBL("main".to_string())), 
+                    Instruction::Assignment(AssignmentType::STR(10), Register::RA),
+                    Instruction::Assignment(AssignmentType::STR(5), Register::RB),
+                    Instruction::Arithmatic(ArithmaticType::MUL, Register::RA, Register::RB, Register::RC),
                     Instruction::HLT];
         vm.run(program);
         assert_eq!( vm.registers[Register::RC as usize], 50);
@@ -203,10 +256,10 @@ mod tests {
     #[test]
     fn div() {
         let mut vm = VM::new();
-        let program = vec![Instruction::LBL("main".to_string()),
-                    Instruction::STR(10, Register::RA),
-                    Instruction::STR(5, Register::RB),
-                    Instruction::DIV(Register::RA, Register::RB, Register::RC),
+         let program = vec![Instruction::Control(ControlType::LBL("main".to_string())), 
+                    Instruction::Assignment(AssignmentType::STR(10), Register::RA),
+                    Instruction::Assignment(AssignmentType::STR(5), Register::RB),
+                    Instruction::Arithmatic(ArithmaticType::DIV, Register::RA, Register::RB, Register::RC),
                     Instruction::HLT];
         vm.run(program);
         assert_eq!( vm.registers[Register::RC as usize], 2);
@@ -215,10 +268,10 @@ mod tests {
     #[should_panic(expected = "VMError: ZeroDivision on ip 4")]
     fn zerodivision() {
         let mut vm = VM::new();
-        let program = vec![Instruction::LBL("main".to_string()),
-                    Instruction::STR(10, Register::RA),
-                    Instruction::STR(0, Register::RB),
-                    Instruction::DIV(Register::RA, Register::RB, Register::RC),
+                    let program = vec![Instruction::Control(ControlType::LBL("main".to_string())), 
+                    Instruction::Assignment(AssignmentType::STR(10), Register::RA),
+                    Instruction::Assignment(AssignmentType::STR(0), Register::RB),
+                    Instruction::Arithmatic(ArithmaticType::DIV, Register::RA, Register::RB, Register::RC),
                     Instruction::HLT];
         vm.run(program);
         assert_eq!( vm.registers[Register::RC as usize], 2);
@@ -227,12 +280,12 @@ mod tests {
     #[test]
     fn jmp() {
         let mut vm = VM::new();
-        let program = vec![Instruction::LBL("main".to_string()), 
-                    Instruction::STR(10, Register::RA),
-                    Instruction::STR(5, Register::RB),
-                    Instruction::JMP("test".to_string()),
-                    Instruction::ADD(Register::RA, Register::RB, Register::RB),
-                    Instruction::LBL("test".to_string()), 
+        let program = vec![Instruction::Control(ControlType::LBL("main".to_string())), 
+                    Instruction::Assignment(AssignmentType::STR(10), Register::RA),
+                    Instruction::Assignment(AssignmentType::STR(5), Register::RB),
+                    Instruction::Branch(BranchType::UNCONDITIONAL, "test".to_string()),
+                    Instruction::Arithmatic(ArithmaticType::ADD, Register::RA, Register::RB, Register::RB),
+                    Instruction::Control(ControlType::LBL("test".to_string())), 
                     Instruction::HLT];
         vm.run(program);
         assert_eq!( vm.registers[Register::RB as usize], 5);
@@ -240,13 +293,13 @@ mod tests {
     #[test]
     fn jz() {
         let mut vm = VM::new();
-        let program = vec![Instruction::LBL("main".to_string()), 
-                    Instruction::STR(0, Register::RA),
-                    Instruction::STR(5, Register::RB),
-                    Instruction::STR(5, Register::RC),
-                    Instruction::JZ(Register::RA, "test".to_string()),
-                    Instruction::ADD(Register::RC, Register::RB, Register::RB),
-                    Instruction::LBL("test".to_string()), 
+        let program = vec![Instruction::Control(ControlType::LBL("main".to_string())), 
+                    Instruction::Assignment(AssignmentType::STR(0), Register::RA),
+                    Instruction::Assignment(AssignmentType::STR(5), Register::RB),
+                    Instruction::Assignment(AssignmentType::STR(5), Register::RC),
+                    Instruction::Branch(BranchType::ZERO(Register::RA), "test".to_string()),
+                    Instruction::Arithmatic(ArithmaticType::ADD, Register::RA, Register::RB, Register::RB),
+                    Instruction::Control(ControlType::LBL("test".to_string())), 
                     Instruction::HLT];
         vm.run(program);
         assert_eq!( vm.registers[Register::RB as usize], 5);
@@ -254,13 +307,13 @@ mod tests {
     #[test]
     fn jnz() {
         let mut vm = VM::new();
-        let program = vec![Instruction::LBL("main".to_string()), 
-                    Instruction::STR(0, Register::RA),
-                    Instruction::STR(5, Register::RB),
-                    Instruction::STR(5, Register::RC),
-                    Instruction::JNZ(Register::RB, "test".to_string()),
-                    Instruction::ADD(Register::RC, Register::RB, Register::RB),
-                    Instruction::LBL("test".to_string()), 
+        let program = vec![Instruction::Control(ControlType::LBL("main".to_string())), 
+                    Instruction::Assignment(AssignmentType::STR(0), Register::RA),
+                    Instruction::Assignment(AssignmentType::STR(5), Register::RB),
+                    Instruction::Assignment(AssignmentType::STR(5), Register::RC),
+                    Instruction::Branch(BranchType::NOTZERO(Register::RB), "test".to_string()),
+                    Instruction::Arithmatic(ArithmaticType::ADD, Register::RA, Register::RB, Register::RB),
+                    Instruction::Control(ControlType::LBL("test".to_string())), 
                     Instruction::HLT];
         vm.run(program);
         assert_eq!( vm.registers[Register::RB as usize], 5);

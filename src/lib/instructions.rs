@@ -1,20 +1,65 @@
 use registers::Register;
 
 
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum ArithmaticType {
+	ADD,
+	SUB,
+	MUL,
+	DIV,
+	MAX,
+	MIN
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum IOType {
+	IN,
+	OUT,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BitwiseType {
+	AND,
+	OR,
+	XOR,
+	SHIFT(ShiftType)
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum ShiftType {
+	LEFT,
+	RIGHT,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum BranchType {
+	UNCONDITIONAL,
+	ZERO(Register),
+	NOTZERO(Register)
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum ControlType {
+	LBL(String)
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum AssignmentType {
+	STR(i32),
+	CPY(Register)
+}
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum Instruction {
-	NOP, 
-	OUT(Register), 
-	ADD(Register, Register, Register),
-	SUB(Register, Register, Register), 
-	MUL(Register, Register, Register),
-	DIV(Register, Register, Register),
-	STR(i32, Register),
-	JMP(String), 
-	JZ(Register, String), 
-	JNZ(Register, String), 
-	LBL(String),
-	HLT, 
+	IO(IOType, Register), 
+	Arithmatic(ArithmaticType, Register, Register, Register),
+	Bitwise(BitwiseType, Register, Register, Register),
+	Branch(BranchType, String),
+	Control(ControlType),
+	Assignment(AssignmentType, Register),
+	NOP,
+	HLT,
 }
 
 
