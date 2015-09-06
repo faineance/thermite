@@ -13,31 +13,53 @@ You'll need a pretty up to date version of rust nightly.
 ```cargo run -- run example/factorial.vma``` to run factorial.vma.
 ## Instruction Set
 #### Arithmetic Operations
-Arithmetic operations are in the format
+Arithmetic operations are in the format:
 
-| ``instruction`` | ``source`` | ``target`` | ``destination`` |
+| ``opcode`` | ``source`` | ``target`` | ``destination`` |
 |-----------------|------------|------------|---------------|
 
-| Instruction | Usage                     | Function                                                                  |
+| Opcode | Usage                     | Function                                                                  |
 |-------------|---------------------------|---------------------------------------------------------------------------|
-| add         | add ``ra`` ``rb`` ``rc``  | set ``rc`` to the sum of ``ra`` and ``rb``                                |
-| sub         | sub ``ra`` ``rb`` ``rc``  | set ``rc`` to the difference of ``ra`` and ``rb``        |
-| mul         | mul ``ra`` ``rb`` ``rc``  | set ``rc`` to the product of ``ra`` and ``rb``          |
-| div         | div ``ra`` ``rb`` ``rc``  | set ``rc`` to the quotient of ``ra`` and ``rb``      |
-#### Register Operations
+| add         | add ``ra`` ``rb`` ``rc``  | **``rc = ra + rb``**      |
+| sub         | sub ``ra`` ``rb`` ``rc``  | **``rc = ra - rb``**      |
+| mul         | mul ``ra`` ``rb`` ``rc``  | **``rc = ra * rb``**        |
+| div         | div ``ra`` ``rb`` ``rc``  | **``rc = ra / rb``**   |
+| max         | max ``ra`` ``rb`` ``rc``  | **``rc = max(ra, rb)``**      |
+| min         | min ``ra`` ``rb`` ``rc``  | **``rc = min(ra, rb)``**     |
+
+#### Bitwise Operations
+Bitwise operations are in the same format as arithmatic.
+
+| Opcode | Usage                     | Function                                                                  |
+|-------------|---------------------------|---------------------------------------------------------------------------|
+| and         | and ``ra`` ``rb`` ``rc`` |  **``rc = ra & rb``**               |
+| or          | or ``ra`` ``rb`` ``rc`` |  **``rc = ra | rb``**      |
+| xor         | xor ``ra`` ``rb`` ``rc`` |  **``rc = ra ^ rb``**       |
+| shl         | shl ``ra`` ``rb`` ``rc`` |  **``rc = ra << rb``**                       |
+| shr         | shr ``ra`` ``rb`` ``rc`` |  **``rc = ra >> rb`` (arithmatic)**         |
+
+#### Branching Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
-| str         | str ``6`` ``ra`` | store 6 to ``ra``                    |
-#### Jump Operations
+| jmp         | jmp ``label``     | **``ip = label``**                    |
+| jz          | jz  ``ra`` ``label``     | **`` if (ra == 0) ip = label``**    |
+| jnz         | jnz ``ra`` ``label``     | **`` if (ra != 0) ip = label``**   |
+
+#### Assignment Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
-| jmp         | jmp ``label``     | jump to  ``label``                     |
-| jz          | jz  ``ra`` ``label``     | jump if ``ra`` is zero to ``label``    |
-| jnz         | jnz ``ra`` ``label``     | jump if ``ra`` is nonzero to ``label``  |
+| str         | str ``6`` ``ra`` | **``ra = 6``**                     |
+| cpy         | cpy ``rb`` ``ra`` | **``ra = rb``**                     |
+
+#### IO Operations
+| Opcode | Usage                     | Function                                                                  |
+|-------------|---------------------------|---------------------------------------------------------------------------|
+| out         | out ``ra``   | print to sdout **``ra``**     |
+| in         | in ``ra``   | store stdin to **``ra``**      |
+
 #### Other Operations
 | Instruction | Usage     | Function                                                                  |
 |-------------|-----------|---------------------------------------------------------------------------|
-| out         | out ``ra``       | print the contents of ``ra``                                                       |
 | hlt         | hlt       | halt the program                                                          |
 | nop         | nop       | do nothing                                                                |
 
