@@ -176,12 +176,10 @@ impl Iterator for Parser {
 	type Item = Instruction;
 	fn next(&mut self) -> Option<Instruction> {
 
-		let instruction = match self.next_instruction() {
-			Ok(i) => Some(i),
+		match self.next_instruction() {
+			Ok(i) => i,
 			Err(e) => panic!("ParserError: {:?}", e)
-		};
-
-		instruction.unwrap()
+		}
 
 	}
 }
