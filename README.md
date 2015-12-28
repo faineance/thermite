@@ -36,7 +36,7 @@ Bitwise operations are in the same format as arithmatic.
 | or          | or ``ra`` ``rb`` ``rc`` |  **``rc = ra | rb``**      |
 | xor         | xor ``ra`` ``rb`` ``rc`` |  **``rc = ra ^ rb``**       |
 | shl         | shl ``ra`` ``rb`` ``rc`` |  **``rc = ra << rb``**                       |
-| shr         | shr ``ra`` ``rb`` ``rc`` |  **``rc = ra >> rb`` (arithmatic)**         |
+| shr         | shr ``ra`` ``rb`` ``rc`` |  **``rc = ra >> rb`` (arithmetic)**         |
 
 #### Branching Operations
 | Instruction | Usage     | Function                                                                  |
